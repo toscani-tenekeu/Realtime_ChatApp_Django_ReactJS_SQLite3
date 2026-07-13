@@ -329,6 +329,9 @@ export function MessageBubble({ message, showAvatar, onReply, onRetry, onDiscard
               <MenuItem icon={<CopyRegular />} onClick={() => { navigator.clipboard?.writeText(message.body); toast.show({ title: "Copied", intent: "success" }); }}>
                 Copy text
               </MenuItem>
+              {onForward && !message.deleted ? (
+                <MenuItem icon={<ShareRegular />} onClick={() => onForward(message)}>Forward…</MenuItem>
+              ) : null}
               {mine ? (
                 <MenuItem icon={<EditRegular />} onClick={() => setEditing(true)}>Edit</MenuItem>
               ) : null}
