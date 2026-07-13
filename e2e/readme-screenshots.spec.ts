@@ -26,7 +26,7 @@ test("capture landing page, workspace, and new conversation dialog", async ({ pa
   await page.getByRole("button", { name: "New conversation" }).first().click();
   await expect(page.getByTestId("new-conversation-dialog")).toBeVisible();
   await page.getByRole("switch", { name: "Create a group" }).click();
-  await page.getByLabel("Group name").fill("Launch planning");
+  await page.getByLabel("Group name").fill("Realtime ChatApp launch");
   await page.getByLabel("Select Ada Lovelace").click();
   await page.getByLabel("Select Priya Menon").click();
   await page.screenshot({ path: screenshotPath("new-conversation.png") });
