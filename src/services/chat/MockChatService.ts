@@ -6,12 +6,12 @@ import type {
   ID,
   Message,
   Paged,
+  SearchHit,
 } from "@/services/types";
 import { seedConversations, seedMessages } from "@/mocks/seed";
 
 const delay = (ms = 200) => new Promise((r) => setTimeout(r, ms));
 
-// Occasional random failure to exercise failed/retry UI.
 function shouldFailOccasionally() {
   return Math.random() < 0.08;
 }
@@ -28,6 +28,12 @@ export class MockChatService implements ChatService {
   subscribe(l: () => void) {
     this.listeners.add(l);
     return () => this.listeners.delete(l);
+  }
+
+  private mustGet(id: ID): Conversation {
+    const c = this.conversations.find((x) => x.id === id);
+    if (!c) throw new Error("Conversation not found");
+    return c;
   }
 
   async listConversations() {
@@ -152,24 +158,21 @@ export class MockChatService implements ChatService {
   }
 
   async pinConversation(id: ID, pinned: boolean) {
-    const c = this.conversations.find((x) => x.id === id);
-    if (!c) throw new Error("Not found");
+    const c = this.mustGet(id);
     c.pinned = pinned;
     this.emit();
     return c;
   }
 
   async muteConversation(id: ID, muted: boolean) {
-    const c = this.conversations.find((x) => x.id === id);
-    if (!c) throw new Error("Not found");
+    const c = this.mustGet(id);
     c.muted = muted;
     this.emit();
     return c;
   }
 
   async archiveConversation(id: ID, archived: boolean) {
-    const c = this.conversations.find((x) => x.id === id);
-    if (!c) throw new Error("Not found");
+    const c = this.mustGet(id);
     c.archived = archived;
     this.emit();
     return c;
@@ -200,5 +203,116 @@ export class MockChatService implements ChatService {
     this.conversations.push(conv);
     this.emit();
     return conv;
+  }
+
+  async forwardMessage({ messageId, conversationIds }: { messageId: ID; conversationIds: ID[] }) {
+    await delay(300);
+    const src = this.messages.find((m) => m.id === messageId);
+    if (!src) throw new Error("Message not found");
+    for (const cid of conversationIds) {
+      const clone: Message = {
+        id: "m_" + Math.random().toString(36).slice(2, 10),
+        conversationId: cid,
+        authorId: "u_me",
+        body: src.body,
+        createdAt: new Date().toISOString(),
+        attachments: [...src.attachments],
+        reactions: [],
+        status: "sent",
+      };
+      this.messages.push(clone);
+      const conv = this.conversations.find((c) => c.id === cid);
+      if (conv) conv.lastMessage = clone;
+    }
+    this.emit();
+  }
+
+  async searchMessages(query: string) {
+    await delay(150);
+    const q = query.trim().toLowerCase();
+    if (!q) return [];
+    const hits: SearchHit[] = [];
+    for (const m of this.messages) {
+      if (m.deleted) continue;
+      if (m.body.toLowerCase().includes(q)) {
+        hits.push({ conversationId: m.conversationId, message: m });
+      }
+    }
+    return hits
+      .sort((a, b) => Date.parse(b.message.createdAt) - Date.parse(a.message.createdAt))
+      .slice(0, 40);
+  }
+
+  async updateConversation(id: ID, patch: { name?: string; description?: string; avatarUrl?: string }) {
+    await delay(180);
+    const c = this.mustGet(id);
+    if (c.kind !== "group") throw new Error("Only groups can be renamed.");
+    if (patch.name !== undefined) c.name = patch.name;
+    if (patch.description !== undefined) c.description = patch.description;
+    if (patch.avatarUrl !== undefined) c.avatarUrl = patch.avatarUrl;
+    this.emit();
+    return c;
+  }
+
+  async addMembers(conversationId: ID, memberIds: ID[]) {
+    await delay(200);
+    const c = this.mustGet(conversationId);
+    if (c.kind !== "group") throw new Error("Members can only be added to groups.");
+    c.memberIds = Array.from(new Set([...c.memberIds, ...memberIds]));
+    this.emit();
+    return c;
+  }
+
+  async removeMember(conversationId: ID, userId: ID) {
+    await delay(180);
+    const c = this.mustGet(conversationId);
+    if (c.kind !== "group") throw new Error("Members can only be removed from groups.");
+    c.memberIds = c.memberIds.filter((id) => id !== userId);
+    c.adminIds = c.adminIds.filter((id) => id !== userId);
+    this.emit();
+    return c;
+  }
+
+  async promoteAdmin(conversationId: ID, userId: ID) {
+    await delay(150);
+    const c = this.mustGet(conversationId);
+    if (!c.memberIds.includes(userId)) throw new Error("Not a member.");
+    if (!c.adminIds.includes(userId)) c.adminIds.push(userId);
+    this.emit();
+    return c;
+  }
+
+  async demoteAdmin(conversationId: ID, userId: ID) {
+    await delay(150);
+    const c = this.mustGet(conversationId);
+    c.adminIds = c.adminIds.filter((id) => id !== userId);
+    this.emit();
+    return c;
+  }
+
+  async leaveConversation(id: ID) {
+    await delay(180);
+    const c = this.mustGet(id);
+    c.memberIds = c.memberIds.filter((m) => m !== "u_me");
+    c.adminIds = c.adminIds.filter((m) => m !== "u_me");
+    this.conversations = this.conversations.filter((x) => x.id !== id);
+    this.emit();
+  }
+
+  async deleteConversation(id: ID) {
+    await delay(180);
+    this.conversations = this.conversations.filter((x) => x.id !== id);
+    this.messages = this.messages.filter((m) => m.conversationId !== id);
+    this.emit();
+  }
+
+  async getSharedAttachments(conversationId: ID) {
+    await delay(120);
+    const atts: Attachment[] = [];
+    for (const m of this.messages) {
+      if (m.conversationId !== conversationId || m.deleted) continue;
+      atts.push(...m.attachments);
+    }
+    return atts;
   }
 }
