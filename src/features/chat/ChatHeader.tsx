@@ -22,7 +22,7 @@ const useStyles = makeStyles({
     padding: `${tokens.spacingVerticalS} ${tokens.spacingHorizontalL}`,
     borderBottom: `1px solid ${tokens.colorNeutralStroke2}`,
     backgroundColor: tokens.colorNeutralBackground1,
-    minHeight: 60,
+    minHeight: "60px",
   },
   info: { flex: 1, minWidth: 0, display: "flex", flexDirection: "column" },
   title: { fontWeight: tokens.fontWeightSemibold, fontSize: tokens.fontSizeBase400 },

@@ -66,7 +66,7 @@ const useStyles = makeStyles({
     textAlign: "center",
     color: tokens.colorNeutralForeground3,
   },
-  pin: { fontSize: 10, color: tokens.colorNeutralForeground3, letterSpacing: "0.06em", textTransform: "uppercase", padding: `${tokens.spacingVerticalXS} ${tokens.spacingHorizontalL}` },
+  pin: { fontSize: "10px", color: tokens.colorNeutralForeground3, letterSpacing: "0.06em", textTransform: "uppercase", padding: `${tokens.spacingVerticalXS} ${tokens.spacingHorizontalL}` },
 });
 
 interface Props {
