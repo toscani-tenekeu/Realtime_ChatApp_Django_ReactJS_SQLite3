@@ -1,13 +1,64 @@
 import type { Conversation, Message, User } from "@/services/types";
 
 export const seedUsers: User[] = [
-  { id: "u_me", username: "you", displayName: "You", email: "you@pulse.app", presence: "online", bio: "Product designer. Coffee first." },
-  { id: "u_ada", username: "ada", displayName: "Ada Lovelace", email: "ada@pulse.app", presence: "online", bio: "Notes on notes." },
-  { id: "u_lin", username: "linus", displayName: "Linus Wren", email: "linus@pulse.app", presence: "away", lastSeen: new Date(Date.now() - 15 * 60_000).toISOString(), bio: "Systems." },
-  { id: "u_mia", username: "mia", displayName: "Mia Okafor", email: "mia@pulse.app", presence: "offline", lastSeen: new Date(Date.now() - 3 * 3600_000).toISOString(), bio: "Illustration & type." },
-  { id: "u_ren", username: "renji", displayName: "Renji Sato", email: "renji@pulse.app", presence: "online", bio: "Weekend runner." },
-  { id: "u_pri", username: "priya", displayName: "Priya Menon", email: "priya@pulse.app", presence: "away", lastSeen: new Date(Date.now() - 45 * 60_000).toISOString() },
-  { id: "u_kai", username: "kai", displayName: "Kai Berg", email: "kai@pulse.app", presence: "offline", lastSeen: new Date(Date.now() - 26 * 3600_000).toISOString() },
+  {
+    id: "u_me",
+    username: "you",
+    displayName: "You",
+    email: "you@pulse.app",
+    presence: "online",
+    bio: "Product designer. Coffee first.",
+  },
+  {
+    id: "u_ada",
+    username: "ada",
+    displayName: "Ada Lovelace",
+    email: "ada@pulse.app",
+    presence: "online",
+    bio: "Notes on notes.",
+  },
+  {
+    id: "u_lin",
+    username: "linus",
+    displayName: "Linus Wren",
+    email: "linus@pulse.app",
+    presence: "away",
+    lastSeen: new Date(Date.now() - 15 * 60_000).toISOString(),
+    bio: "Systems.",
+  },
+  {
+    id: "u_mia",
+    username: "mia",
+    displayName: "Mia Okafor",
+    email: "mia@pulse.app",
+    presence: "offline",
+    lastSeen: new Date(Date.now() - 3 * 3600_000).toISOString(),
+    bio: "Illustration & type.",
+  },
+  {
+    id: "u_ren",
+    username: "renji",
+    displayName: "Renji Sato",
+    email: "renji@pulse.app",
+    presence: "online",
+    bio: "Weekend runner.",
+  },
+  {
+    id: "u_pri",
+    username: "priya",
+    displayName: "Priya Menon",
+    email: "priya@pulse.app",
+    presence: "away",
+    lastSeen: new Date(Date.now() - 45 * 60_000).toISOString(),
+  },
+  {
+    id: "u_kai",
+    username: "kai",
+    displayName: "Kai Berg",
+    email: "kai@pulse.app",
+    presence: "offline",
+    lastSeen: new Date(Date.now() - 26 * 3600_000).toISOString(),
+  },
 ];
 
 const iso = (min: number) => new Date(Date.now() - min * 60_000).toISOString();
@@ -97,7 +148,13 @@ export const seedConversations: Conversation[] = [
 ];
 
 export const seedMessages: Message[] = [
-  baseMsg("m1", "c_ada", "u_ada", "Hey! Did you get a chance to look at the new onboarding flow?", 60 * 24),
+  baseMsg(
+    "m1",
+    "c_ada",
+    "u_ada",
+    "Hey! Did you get a chance to look at the new onboarding flow?",
+    60 * 24,
+  ),
   baseMsg("m2", "c_ada", "u_me", "Yes — the empty state is much sharper now.", 60 * 23),
   baseMsg("m3", "c_ada", "u_ada", "Great. I'll ship it to staging tonight.", 60 * 22),
   baseMsg("m4", "c_ada", "u_ada", "Also: coffee tomorrow?", 12),

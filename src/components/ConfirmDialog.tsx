@@ -43,7 +43,11 @@ export function ConfirmDialog({
             </DialogTrigger>
             <Button
               appearance={destructive ? "primary" : "primary"}
-              style={destructive ? { backgroundColor: "var(--colorStatusDangerBackground3, #c50f1f)" } : undefined}
+              style={
+                destructive
+                  ? { backgroundColor: "var(--colorStatusDangerBackground3, #c50f1f)" }
+                  : undefined
+              }
               onClick={() => {
                 onConfirm();
                 onOpenChange(false);

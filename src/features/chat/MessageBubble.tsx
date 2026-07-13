@@ -26,7 +26,6 @@ import {
   DocumentRegular,
   CheckmarkRegular,
   ShareRegular,
-
 } from "@fluentui/react-icons";
 import { useState } from "react";
 import type { Message } from "@/services/types";
@@ -135,7 +134,12 @@ const useStyles = makeStyles({
     color: tokens.colorNeutralForeground1,
     fontSize: tokens.fontSizeBase200,
   },
-  edited: { fontStyle: "italic", opacity: 0.7, fontSize: tokens.fontSizeBase100, marginLeft: "6px" },
+  edited: {
+    fontStyle: "italic",
+    opacity: 0.7,
+    fontSize: tokens.fontSizeBase100,
+    marginLeft: "6px",
+  },
   failed: {
     display: "flex",
     alignItems: "center",
@@ -167,7 +171,14 @@ interface Props {
   onForward?: (m: Message) => void;
 }
 
-export function MessageBubble({ message, showAvatar, onReply, onRetry, onDiscard, onForward }: Props) {
+export function MessageBubble({
+  message,
+  showAvatar,
+  onReply,
+  onRetry,
+  onDiscard,
+  onForward,
+}: Props) {
   const s = useStyles();
   const toast = useToast();
   const mine = message.authorId === "u_me";
@@ -180,8 +191,23 @@ export function MessageBubble({ message, showAvatar, onReply, onRetry, onDiscard
     if (!mine) return null;
     if (message.status === "sending") return <span aria-label="Sending">…</span>;
     if (message.status === "failed") return null;
-    if (message.status === "read") return <span aria-label="Read" style={{ color: tokens.colorBrandForeground1, display: "inline-flex" }}><CheckmarkRegular /><CheckmarkRegular style={{ marginLeft: -6 }} /></span>;
-    if (message.status === "delivered") return <span aria-label="Delivered" style={{ opacity: 0.7, display: "inline-flex" }}><CheckmarkRegular /><CheckmarkRegular style={{ marginLeft: -6 }} /></span>;
+    if (message.status === "read")
+      return (
+        <span
+          aria-label="Read"
+          style={{ color: tokens.colorBrandForeground1, display: "inline-flex" }}
+        >
+          <CheckmarkRegular />
+          <CheckmarkRegular style={{ marginLeft: -6 }} />
+        </span>
+      );
+    if (message.status === "delivered")
+      return (
+        <span aria-label="Delivered" style={{ opacity: 0.7, display: "inline-flex" }}>
+          <CheckmarkRegular />
+          <CheckmarkRegular style={{ marginLeft: -6 }} />
+        </span>
+      );
     return <CheckmarkRegular aria-label="Sent" />;
   }
 
@@ -204,7 +230,13 @@ export function MessageBubble({ message, showAvatar, onReply, onRetry, onDiscard
     <div className={mergeClasses(s.row, mine && s.mine, s.rowHover)}>
       <div className={s.avatarSlot}>
         {showAvatar && !mine ? (
-          <Avatar name={author?.displayName ?? "?"} image={author?.avatarUrl} size={28} presence={author?.presence} showPresence />
+          <Avatar
+            name={author?.displayName ?? "?"}
+            image={author?.avatarUrl}
+            size={28}
+            presence={author?.presence}
+            showPresence
+          />
         ) : null}
       </div>
       <div className={mergeClasses(s.bubbleCol, mine && s.bubbleColMine)}>
@@ -215,9 +247,7 @@ export function MessageBubble({ message, showAvatar, onReply, onRetry, onDiscard
           </div>
         ) : null}
         <div className={mergeClasses(s.bubble, mine && s.bubbleMine)}>
-          {message.replyToId ? (
-            <div className={s.reply}>Reply</div>
-          ) : null}
+          {message.replyToId ? <div className={s.reply}>Reply</div> : null}
           {editing ? (
             <div>
               <textarea
@@ -228,7 +258,14 @@ export function MessageBubble({ message, showAvatar, onReply, onRetry, onDiscard
                 rows={3}
               />
               <div className={s.editRow}>
-                <Button size="small" appearance="secondary" onClick={() => { setEditing(false); setDraft(message.body); }}>
+                <Button
+                  size="small"
+                  appearance="secondary"
+                  onClick={() => {
+                    setEditing(false);
+                    setDraft(message.body);
+                  }}
+                >
                   Cancel
                 </Button>
                 <Button
@@ -255,7 +292,13 @@ export function MessageBubble({ message, showAvatar, onReply, onRetry, onDiscard
                     a.kind === "image" ? (
                       <img key={a.id} src={a.url} alt={a.name} className={s.imageAttach} />
                     ) : (
-                      <a key={a.id} href={a.url} className={s.fileAttach} target="_blank" rel="noreferrer">
+                      <a
+                        key={a.id}
+                        href={a.url}
+                        className={s.fileAttach}
+                        target="_blank"
+                        rel="noreferrer"
+                      >
                         <DocumentRegular /> {a.name}
                       </a>
                     ),
@@ -302,13 +345,23 @@ export function MessageBubble({ message, showAvatar, onReply, onRetry, onDiscard
         <Popover positioning="above" withArrow>
           <PopoverTrigger disableButtonEnhancement>
             <Tooltip content="React" relationship="label">
-              <Button aria-label="Add reaction" appearance="subtle" size="small" icon={<EmojiRegular />} />
+              <Button
+                aria-label="Add reaction"
+                appearance="subtle"
+                size="small"
+                icon={<EmojiRegular />}
+              />
             </Tooltip>
           </PopoverTrigger>
           <PopoverSurface>
             <div className={s.reactPicker}>
               {REACTIONS.map((e) => (
-                <button key={e} className={s.reactBtn} onClick={() => chatService.react(message.id, e)} aria-label={`React with ${e}`}>
+                <button
+                  key={e}
+                  className={s.reactBtn}
+                  onClick={() => chatService.react(message.id, e)}
+                  aria-label={`React with ${e}`}
+                >
                   {e}
                 </button>
               ))}
@@ -316,30 +369,55 @@ export function MessageBubble({ message, showAvatar, onReply, onRetry, onDiscard
           </PopoverSurface>
         </Popover>
         <Tooltip content="Reply" relationship="label">
-          <Button aria-label="Reply" appearance="subtle" size="small" icon={<ArrowReplyRegular />} onClick={() => onReply(message)} />
+          <Button
+            aria-label="Reply"
+            appearance="subtle"
+            size="small"
+            icon={<ArrowReplyRegular />}
+            onClick={() => onReply(message)}
+          />
         </Tooltip>
         <Menu>
           <MenuTrigger disableButtonEnhancement>
             <Tooltip content="More" relationship="label">
-              <Button aria-label="More actions" appearance="subtle" size="small" icon={<MoreVerticalRegular />} />
+              <Button
+                aria-label="More actions"
+                appearance="subtle"
+                size="small"
+                icon={<MoreVerticalRegular />}
+              />
             </Tooltip>
           </MenuTrigger>
           <MenuPopover>
             <MenuList>
-              <MenuItem icon={<CopyRegular />} onClick={() => { navigator.clipboard?.writeText(message.body); toast.show({ title: "Copied", intent: "success" }); }}>
+              <MenuItem
+                icon={<CopyRegular />}
+                onClick={() => {
+                  navigator.clipboard?.writeText(message.body);
+                  toast.show({ title: "Copied", intent: "success" });
+                }}
+              >
                 Copy text
               </MenuItem>
               {onForward && !message.deleted ? (
-                <MenuItem icon={<ShareRegular />} onClick={() => onForward(message)}>Forward…</MenuItem>
+                <MenuItem icon={<ShareRegular />} onClick={() => onForward(message)}>
+                  Forward…
+                </MenuItem>
               ) : null}
               {mine ? (
-                <MenuItem icon={<EditRegular />} onClick={() => setEditing(true)}>Edit</MenuItem>
+                <MenuItem icon={<EditRegular />} onClick={() => setEditing(true)}>
+                  Edit
+                </MenuItem>
               ) : null}
               {mine ? (
-                <MenuItem icon={<DeleteRegular />} onClick={() => setConfirmDelete(true)}>Delete</MenuItem>
+                <MenuItem icon={<DeleteRegular />} onClick={() => setConfirmDelete(true)}>
+                  Delete
+                </MenuItem>
               ) : null}
               {message.status === "failed" ? (
-                <MenuItem icon={<ArrowClockwiseRegular />} onClick={() => onRetry?.(message.id)}>Retry</MenuItem>
+                <MenuItem icon={<ArrowClockwiseRegular />} onClick={() => onRetry?.(message.id)}>
+                  Retry
+                </MenuItem>
               ) : null}
             </MenuList>
           </MenuPopover>

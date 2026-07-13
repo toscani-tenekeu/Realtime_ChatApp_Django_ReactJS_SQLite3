@@ -35,23 +35,32 @@ const useStyles = makeStyles({
     padding: `${tokens.spacingVerticalM} ${tokens.spacingHorizontalL}`,
     borderBottom: `1px solid ${tokens.colorNeutralStroke2}`,
     backgroundColor: tokens.colorNeutralBackground1,
-    position: "sticky", top: 0, zIndex: 1,
+    position: "sticky",
+    top: 0,
+    zIndex: 1,
   },
   container: {
-    maxWidth: "760px", margin: "0 auto",
+    maxWidth: "760px",
+    margin: "0 auto",
     padding: tokens.spacingHorizontalXXL,
-    display: "flex", flexDirection: "column", gap: tokens.spacingVerticalL,
+    display: "flex",
+    flexDirection: "column",
+    gap: tokens.spacingVerticalL,
   },
   card: {
     backgroundColor: tokens.colorNeutralBackground1,
     border: `1px solid ${tokens.colorNeutralStroke2}`,
     borderRadius: tokens.borderRadiusLarge,
     padding: tokens.spacingHorizontalXXL,
-    display: "flex", flexDirection: "column", gap: tokens.spacingVerticalM,
+    display: "flex",
+    flexDirection: "column",
+    gap: tokens.spacingVerticalM,
   },
   sectionTitle: { fontWeight: tokens.fontWeightSemibold, fontSize: tokens.fontSizeBase400 },
   toggleRow: {
-    display: "flex", alignItems: "center", justifyContent: "space-between",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "space-between",
     gap: tokens.spacingHorizontalM,
   },
   toggleText: { display: "flex", flexDirection: "column" },
@@ -62,7 +71,9 @@ const useStyles = makeStyles({
     borderLeftColor: tokens.colorPaletteRedBorder2,
   },
   blockedRow: {
-    display: "flex", alignItems: "center", gap: tokens.spacingHorizontalM,
+    display: "flex",
+    alignItems: "center",
+    gap: tokens.spacingHorizontalM,
     padding: `${tokens.spacingVerticalS} 0`,
   },
 });
@@ -98,7 +109,11 @@ export default function SettingsPage() {
     if (on && "Notification" in window && Notification.permission !== "granted") {
       const res = await Notification.requestPermission();
       if (res !== "granted") {
-        toast.show({ title: "Notifications blocked", body: "Enable them in your browser settings.", intent: "warning" });
+        toast.show({
+          title: "Notifications blocked",
+          body: "Enable them in your browser settings.",
+          intent: "warning",
+        });
         return;
       }
     }
@@ -128,7 +143,11 @@ export default function SettingsPage() {
       toast.show({ title: "Account deleted", intent: "info" });
       navigate("/");
     } catch (e) {
-      toast.show({ title: "Could not delete account", body: (e as Error).message, intent: "error" });
+      toast.show({
+        title: "Could not delete account",
+        body: (e as Error).message,
+        intent: "error",
+      });
     }
   }
 
@@ -143,8 +162,17 @@ export default function SettingsPage() {
   return (
     <div className={s.root}>
       <div className={s.topbar}>
-        <Button appearance="subtle" icon={<ArrowLeftRegular />} onClick={() => navigate("/chat")} aria-label="Back">Back</Button>
-        <Text weight="semibold" size={400}>Settings</Text>
+        <Button
+          appearance="subtle"
+          icon={<ArrowLeftRegular />}
+          onClick={() => navigate("/chat")}
+          aria-label="Back"
+        >
+          Back
+        </Button>
+        <Text weight="semibold" size={400}>
+          Settings
+        </Text>
       </div>
       <div className={s.container}>
         {/* Appearance */}
@@ -162,7 +190,9 @@ export default function SettingsPage() {
         {/* Notifications */}
         <div className={s.card}>
           <div className={s.sectionTitle}>Notifications</div>
-          {!settings ? <Spinner size="tiny" /> : (
+          {!settings ? (
+            <Spinner size="tiny" />
+          ) : (
             <>
               <div className={s.toggleRow}>
                 <div className={s.toggleText}>
@@ -171,14 +201,22 @@ export default function SettingsPage() {
                     Get a notification when you receive a new message.
                   </Text>
                 </div>
-                <Switch checked={settings.browserNotifications} onChange={(_, d) => enableBrowserNotifications(d.checked)} />
+                <Switch
+                  checked={settings.browserNotifications}
+                  onChange={(_, d) => enableBrowserNotifications(d.checked)}
+                />
               </div>
               <div className={s.toggleRow}>
                 <div className={s.toggleText}>
                   <Text weight="semibold">Sounds</Text>
-                  <Text size={200} style={{ color: tokens.colorNeutralForeground3 }}>Play a sound for new messages.</Text>
+                  <Text size={200} style={{ color: tokens.colorNeutralForeground3 }}>
+                    Play a sound for new messages.
+                  </Text>
                 </div>
-                <Switch checked={settings.soundEnabled} onChange={(_, d) => updateSetting("soundEnabled", d.checked)} />
+                <Switch
+                  checked={settings.soundEnabled}
+                  onChange={(_, d) => updateSetting("soundEnabled", d.checked)}
+                />
               </div>
             </>
           )}
@@ -187,50 +225,79 @@ export default function SettingsPage() {
         {/* Privacy */}
         <div className={s.card}>
           <div className={s.sectionTitle}>Privacy</div>
-          {!settings ? <Spinner size="tiny" /> : (
+          {!settings ? (
+            <Spinner size="tiny" />
+          ) : (
             <>
               <div className={s.toggleRow}>
                 <div className={s.toggleText}>
                   <Text weight="semibold">Read receipts</Text>
-                  <Text size={200} style={{ color: tokens.colorNeutralForeground3 }}>Let others see when you've read their messages.</Text>
+                  <Text size={200} style={{ color: tokens.colorNeutralForeground3 }}>
+                    Let others see when you've read their messages.
+                  </Text>
                 </div>
-                <Switch checked={settings.showReadReceipts} onChange={(_, d) => updateSetting("showReadReceipts", d.checked)} />
+                <Switch
+                  checked={settings.showReadReceipts}
+                  onChange={(_, d) => updateSetting("showReadReceipts", d.checked)}
+                />
               </div>
               <div className={s.toggleRow}>
                 <div className={s.toggleText}>
                   <Text weight="semibold">Show my presence</Text>
-                  <Text size={200} style={{ color: tokens.colorNeutralForeground3 }}>Broadcast when you're online or away.</Text>
+                  <Text size={200} style={{ color: tokens.colorNeutralForeground3 }}>
+                    Broadcast when you're online or away.
+                  </Text>
                 </div>
-                <Switch checked={settings.showPresence} onChange={(_, d) => updateSetting("showPresence", d.checked)} />
+                <Switch
+                  checked={settings.showPresence}
+                  onChange={(_, d) => updateSetting("showPresence", d.checked)}
+                />
               </div>
             </>
           )}
           <Divider />
           <Text weight="semibold">Blocked accounts</Text>
           {blocked.length === 0 ? (
-            <Text size={200} style={{ color: tokens.colorNeutralForeground3 }}>You haven't blocked anyone.</Text>
-          ) : blocked.map((u) => (
-            <div key={u.id} className={s.blockedRow}>
-              <Avatar name={u.displayName} image={u.avatarUrl} size={32} />
-              <div style={{ flex: 1 }}>
-                <div><Text weight="semibold">{u.displayName}</Text></div>
-                <Text size={200} style={{ color: tokens.colorNeutralForeground3 }}>@{u.username}</Text>
+            <Text size={200} style={{ color: tokens.colorNeutralForeground3 }}>
+              You haven't blocked anyone.
+            </Text>
+          ) : (
+            blocked.map((u) => (
+              <div key={u.id} className={s.blockedRow}>
+                <Avatar name={u.displayName} image={u.avatarUrl} size={32} />
+                <div style={{ flex: 1 }}>
+                  <div>
+                    <Text weight="semibold">{u.displayName}</Text>
+                  </div>
+                  <Text size={200} style={{ color: tokens.colorNeutralForeground3 }}>
+                    @{u.username}
+                  </Text>
+                </div>
+                <Button appearance="secondary" onClick={() => unblock(u.id)}>
+                  Unblock
+                </Button>
               </div>
-              <Button appearance="secondary" onClick={() => unblock(u.id)}>Unblock</Button>
-            </div>
-          ))}
+            ))
+          )}
         </div>
 
         {/* Composer */}
         <div className={s.card}>
           <div className={s.sectionTitle}>Composer</div>
-          {!settings ? <Spinner size="tiny" /> : (
+          {!settings ? (
+            <Spinner size="tiny" />
+          ) : (
             <div className={s.toggleRow}>
               <div className={s.toggleText}>
                 <Text weight="semibold">Press Enter to send</Text>
-                <Text size={200} style={{ color: tokens.colorNeutralForeground3 }}>Shift + Enter always inserts a new line.</Text>
+                <Text size={200} style={{ color: tokens.colorNeutralForeground3 }}>
+                  Shift + Enter always inserts a new line.
+                </Text>
               </div>
-              <Switch checked={settings.enterToSend} onChange={(_, d) => updateSetting("enterToSend", d.checked)} />
+              <Switch
+                checked={settings.enterToSend}
+                onChange={(_, d) => updateSetting("enterToSend", d.checked)}
+              />
             </div>
           )}
         </div>
@@ -244,9 +311,15 @@ export default function SettingsPage() {
           <Field label="New password" hint="At least 8 characters.">
             <Input type="password" value={newPw} onChange={(_, d) => setNewPw(d.value)} />
           </Field>
-          {pwError ? <Text style={{ color: tokens.colorPaletteRedForeground1 }}>{pwError}</Text> : null}
+          {pwError ? (
+            <Text style={{ color: tokens.colorPaletteRedForeground1 }}>{pwError}</Text>
+          ) : null}
           <div>
-            <Button appearance="primary" onClick={onChangePassword} disabled={pwSaving || !currentPw || !newPw}>
+            <Button
+              appearance="primary"
+              onClick={onChangePassword}
+              disabled={pwSaving || !currentPw || !newPw}
+            >
               {pwSaving ? "Updating…" : "Update password"}
             </Button>
           </div>
@@ -254,7 +327,9 @@ export default function SettingsPage() {
 
         {/* Danger zone */}
         <div className={`${s.card} ${s.danger}`}>
-          <div className={s.sectionTitle} style={{ color: tokens.colorPaletteRedForeground1 }}>Danger zone</div>
+          <div className={s.sectionTitle} style={{ color: tokens.colorPaletteRedForeground1 }}>
+            Danger zone
+          </div>
           <Text>Delete your account and all its data. This can't be undone.</Text>
           <Field label="Confirm with password">
             <Input type="password" value={deletePw} onChange={(_, d) => setDeletePw(d.value)} />
@@ -264,7 +339,10 @@ export default function SettingsPage() {
               icon={<DeleteRegular />}
               onClick={() => setConfirmDelete(true)}
               disabled={!deletePw}
-              style={{ backgroundColor: tokens.colorPaletteRedBackground3, color: tokens.colorNeutralForegroundOnBrand }}
+              style={{
+                backgroundColor: tokens.colorPaletteRedBackground3,
+                color: tokens.colorNeutralForegroundOnBrand,
+              }}
             >
               Delete account
             </Button>

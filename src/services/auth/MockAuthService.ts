@@ -62,7 +62,14 @@ export class MockAuthService implements AuthService {
     return this.current?.user ?? null;
   }
 
-  async signIn({ identifier, password }: { identifier: string; password: string; remember: boolean }) {
+  async signIn({
+    identifier,
+    password,
+  }: {
+    identifier: string;
+    password: string;
+    remember: boolean;
+  }) {
     await delay();
     if (!identifier || !password) throw new Error("Enter your credentials.");
     if (password.length < 4) throw new Error("Incorrect email or password.");
@@ -101,7 +108,9 @@ export class MockAuthService implements AuthService {
     if (password.length < 8) throw new Error("Password must be at least 8 characters.");
   }
 
-  async updateProfile(patch: Partial<Pick<User, "displayName" | "username" | "bio" | "avatarUrl">>) {
+  async updateProfile(
+    patch: Partial<Pick<User, "displayName" | "username" | "bio" | "avatarUrl">>,
+  ) {
     await delay(200);
     if (!this.current) throw new Error("Not signed in.");
     if (patch.username !== undefined && !/^[a-z0-9_.]{3,20}$/i.test(patch.username)) {

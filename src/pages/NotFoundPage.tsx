@@ -36,7 +36,9 @@ export default function NotFoundPage() {
           The address you followed doesn't exist. Head back to the app.
         </Body1>
         <div>
-          <Link to="/"><Button appearance="primary">Go home</Button></Link>
+          <Link to="/">
+            <Button appearance="primary">Go home</Button>
+          </Link>
         </div>
       </div>
     </div>

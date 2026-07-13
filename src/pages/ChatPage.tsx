@@ -70,29 +70,41 @@ const useStyles = makeStyles({
     textAlign: "center",
   },
   emptyIcon: {
-    width: "56px", height: "56px",
+    width: "56px",
+    height: "56px",
     borderRadius: tokens.borderRadiusCircular,
-    display: "grid", placeItems: "center",
+    display: "grid",
+    placeItems: "center",
     backgroundColor: tokens.colorBrandBackground2,
     color: tokens.colorBrandForeground1,
     margin: "0 auto",
   },
   topbar: {
-    display: "flex", alignItems: "center", gap: tokens.spacingHorizontalS,
+    display: "flex",
+    alignItems: "center",
+    gap: tokens.spacingHorizontalS,
     padding: `${tokens.spacingVerticalS} ${tokens.spacingHorizontalL}`,
     borderBottom: `1px solid ${tokens.colorNeutralStroke2}`,
     "@media (min-width: 769px)": { display: "none" },
   },
-  brand: { display: "flex", alignItems: "center", gap: tokens.spacingHorizontalS, fontWeight: tokens.fontWeightSemibold },
+  brand: {
+    display: "flex",
+    alignItems: "center",
+    gap: tokens.spacingHorizontalS,
+    fontWeight: tokens.fontWeightSemibold,
+  },
   brandMark: {
-    width: "24px", height: "24px",
+    width: "24px",
+    height: "24px",
     borderRadius: tokens.borderRadiusMedium,
     background: `linear-gradient(135deg, ${tokens.colorBrandBackground}, ${tokens.colorPaletteBerryBackground2})`,
   },
   userBar: {
     padding: tokens.spacingHorizontalM,
     borderTop: `1px solid ${tokens.colorNeutralStroke2}`,
-    display: "flex", alignItems: "center", gap: tokens.spacingHorizontalM,
+    display: "flex",
+    alignItems: "center",
+    gap: tokens.spacingHorizontalM,
     backgroundColor: tokens.colorNeutralBackground2,
   },
   userInfo: { flex: 1, minWidth: 0, display: "flex", flexDirection: "column" },
@@ -114,7 +126,10 @@ export default function ChatPage() {
   const [replyTo, setReplyTo] = useState<Message | null>(null);
 
   const activeId = params.conversationId;
-  const active = useMemo(() => conversations.find((c) => c.id === activeId), [conversations, activeId]);
+  const active = useMemo(
+    () => conversations.find((c) => c.id === activeId),
+    [conversations, activeId],
+  );
 
   const { messages, loading, loadingMore, hasMore, loadMore, send, retry, removeLocal } =
     useMessages(activeId);
@@ -155,24 +170,55 @@ export default function ChatPage() {
       />
       {user ? (
         <div className={s.userBar}>
-          <Avatar name={user.displayName} image={user.avatarUrl} presence={user.presence} showPresence size={32} />
+          <Avatar
+            name={user.displayName}
+            image={user.avatarUrl}
+            presence={user.presence}
+            showPresence
+            size={32}
+          />
           <div className={s.userInfo}>
-            <Text weight="semibold" truncate wrap={false}>{user.displayName}</Text>
-            <Text size={200} style={{ color: tokens.colorNeutralForeground3 }} truncate wrap={false}>@{user.username}</Text>
+            <Text weight="semibold" truncate wrap={false}>
+              {user.displayName}
+            </Text>
+            <Text
+              size={200}
+              style={{ color: tokens.colorNeutralForeground3 }}
+              truncate
+              wrap={false}
+            >
+              @{user.username}
+            </Text>
           </div>
           <ThemeToggle />
           <Menu>
             <MenuTrigger disableButtonEnhancement>
               <Tooltip content="Account" relationship="label">
-                <Button aria-label="Account menu" appearance="subtle" icon={<NavigationRegular />} />
+                <Button
+                  aria-label="Account menu"
+                  appearance="subtle"
+                  icon={<NavigationRegular />}
+                />
               </Tooltip>
             </MenuTrigger>
             <MenuPopover>
               <MenuList>
-                <MenuItem icon={<PersonRegular />} onClick={() => navigate("/profile")}>Profile</MenuItem>
-                <MenuItem icon={<SettingsRegular />} onClick={() => navigate("/settings")}>Settings</MenuItem>
-                <MenuItem icon={<SearchRegular />} onClick={() => setSearchOpen(true)}>Search messages</MenuItem>
-                <MenuItem icon={<SignOutRegular />} onClick={() => { signOut(); navigate("/"); }}>
+                <MenuItem icon={<PersonRegular />} onClick={() => navigate("/profile")}>
+                  Profile
+                </MenuItem>
+                <MenuItem icon={<SettingsRegular />} onClick={() => navigate("/settings")}>
+                  Settings
+                </MenuItem>
+                <MenuItem icon={<SearchRegular />} onClick={() => setSearchOpen(true)}>
+                  Search messages
+                </MenuItem>
+                <MenuItem
+                  icon={<SignOutRegular />}
+                  onClick={() => {
+                    signOut();
+                    navigate("/");
+                  }}
+                >
                   Sign out
                 </MenuItem>
               </MenuList>
@@ -184,18 +230,35 @@ export default function ChatPage() {
   );
 
   return (
-    <div className={s.root}>
+    <div className={s.root} data-testid="chat-page">
       <OfflineBanner />
       {isMobile ? (
         <div className={s.topbar}>
-          <Button aria-label="Open conversations" appearance="subtle" icon={<NavigationRegular />} onClick={() => setDrawerOpen(true)} />
-          <div className={s.brand}><span className={s.brandMark} /> Pulse</div>
+          <Button
+            aria-label="Open conversations"
+            appearance="subtle"
+            icon={<NavigationRegular />}
+            onClick={() => setDrawerOpen(true)}
+          />
+          <div className={s.brand}>
+            <span className={s.brandMark} /> Pulse
+          </div>
           <div style={{ marginLeft: "auto", display: "flex", gap: 4 }}>
             <Tooltip content="Search" relationship="label">
-              <Button aria-label="Search messages" appearance="subtle" icon={<SearchRegular />} onClick={() => setSearchOpen(true)} />
+              <Button
+                aria-label="Search messages"
+                appearance="subtle"
+                icon={<SearchRegular />}
+                onClick={() => setSearchOpen(true)}
+              />
             </Tooltip>
             <Tooltip content="New conversation" relationship="label">
-              <Button aria-label="New conversation" appearance="subtle" icon={<EditRegular />} onClick={() => setNewOpen(true)} />
+              <Button
+                aria-label="New conversation"
+                appearance="subtle"
+                icon={<EditRegular />}
+                onClick={() => setNewOpen(true)}
+              />
             </Tooltip>
           </div>
         </div>
@@ -237,24 +300,30 @@ export default function ChatPage() {
                 onForward={setForwardMsg}
                 typingUserIds={active.typingUserIds}
               />
-              <Composer
-                onSend={send}
-                replyTo={replyTo}
-                onClearReply={() => setReplyTo(null)}
-              />
+              <Composer onSend={send} replyTo={replyTo} onClearReply={() => setReplyTo(null)} />
             </>
           ) : (
             <div className={s.emptyState}>
               <div>
-                <div className={s.emptyIcon}><ChatMultipleRegular fontSize={28} /></div>
+                <div className={s.emptyIcon}>
+                  <ChatMultipleRegular fontSize={28} />
+                </div>
                 <div style={{ marginTop: 12 }}>
-                  <Text size={500} weight="semibold" style={{ color: tokens.colorNeutralForeground1 }}>
+                  <Text
+                    size={500}
+                    weight="semibold"
+                    style={{ color: tokens.colorNeutralForeground1 }}
+                  >
                     Select a conversation
                   </Text>
                 </div>
                 <div style={{ marginTop: 4 }}>Or start a new one from the sidebar.</div>
                 <div style={{ marginTop: 16 }}>
-                  <Button appearance="primary" onClick={() => setNewOpen(true)} icon={<EditRegular />}>
+                  <Button
+                    appearance="primary"
+                    onClick={() => setNewOpen(true)}
+                    icon={<EditRegular />}
+                  >
                     New conversation
                   </Button>
                 </div>

@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import {
   Button,
   Field,
@@ -23,6 +23,7 @@ const useStyles = makeStyles({
 export default function ResetPasswordPage() {
   const s = useStyles();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const [password, setPassword] = useState("");
   const [confirm, setConfirm] = useState("");
   const [showPw, setShowPw] = useState(false);
@@ -42,7 +43,7 @@ export default function ResetPasswordPage() {
     if (Object.values(errs).some(Boolean)) return;
     setSubmitting(true);
     try {
-      await authService.resetPassword({ token: "mock", password });
+      await authService.resetPassword({ token: searchParams.get("token") ?? "", password });
       setDone(true);
       setTimeout(() => navigate("/signin"), 1500);
     } catch (e) {
@@ -56,7 +57,9 @@ export default function ResetPasswordPage() {
     <AuthLayout title="Set a new password" subtitle="Choose something strong you'll remember.">
       <form className={s.form} onSubmit={onSubmit} noValidate>
         {error ? (
-          <MessageBar intent="error"><MessageBarBody>{error}</MessageBarBody></MessageBar>
+          <MessageBar intent="error">
+            <MessageBarBody>{error}</MessageBarBody>
+          </MessageBar>
         ) : null}
         {done ? (
           <MessageBar intent="success">

@@ -92,7 +92,11 @@ export default function RegisterPage() {
             validationState={errors.displayName ? "error" : "none"}
             validationMessage={errors.displayName}
           >
-            <Input value={displayName} onChange={(_, d) => setDisplayName(d.value)} autoComplete="name" />
+            <Input
+              value={displayName}
+              onChange={(_, d) => setDisplayName(d.value)}
+              autoComplete="name"
+            />
           </Field>
           <Field
             label="Username"
@@ -100,7 +104,11 @@ export default function RegisterPage() {
             validationState={errors.username ? "error" : "none"}
             validationMessage={errors.username}
           >
-            <Input value={username} onChange={(_, d) => setUsername(d.value)} autoComplete="username" />
+            <Input
+              value={username}
+              onChange={(_, d) => setUsername(d.value)}
+              autoComplete="username"
+            />
           </Field>
         </div>
         <Field
@@ -109,7 +117,12 @@ export default function RegisterPage() {
           validationState={errors.email ? "error" : "none"}
           validationMessage={errors.email}
         >
-          <Input type="email" value={email} onChange={(_, d) => setEmail(d.value)} autoComplete="email" />
+          <Input
+            type="email"
+            value={email}
+            onChange={(_, d) => setEmail(d.value)}
+            autoComplete="email"
+          />
         </Field>
         <Field
           label="Password"

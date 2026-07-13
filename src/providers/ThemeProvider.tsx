@@ -53,7 +53,10 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
 
   return (
     <ThemeCtx.Provider value={value}>
-      <FluentProvider theme={mode === "dark" ? webDarkTheme : webLightTheme} style={{ height: "100%" }}>
+      <FluentProvider
+        theme={mode === "dark" ? webDarkTheme : webLightTheme}
+        style={{ height: "100%" }}
+      >
         {children}
       </FluentProvider>
     </ThemeCtx.Provider>

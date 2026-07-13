@@ -1,5 +1,18 @@
-import { Badge, Input, makeStyles, tokens, Text, Button, Tooltip } from "@fluentui/react-components";
-import { SearchRegular, EditRegular, DismissRegular, GlobeSearchRegular } from "@fluentui/react-icons";
+import {
+  Badge,
+  Input,
+  makeStyles,
+  tokens,
+  Text,
+  Button,
+  Tooltip,
+} from "@fluentui/react-components";
+import {
+  SearchRegular,
+  EditRegular,
+  DismissRegular,
+  GlobeSearchRegular,
+} from "@fluentui/react-icons";
 import { useMemo, useState } from "react";
 import type { Conversation } from "@/services/types";
 import { Avatar } from "@/components/Avatar";
@@ -52,7 +65,11 @@ const useStyles = makeStyles({
     textOverflow: "ellipsis",
     whiteSpace: "nowrap",
   },
-  timestamp: { color: tokens.colorNeutralForeground3, fontSize: tokens.fontSizeBase200, flexShrink: 0 },
+  timestamp: {
+    color: tokens.colorNeutralForeground3,
+    fontSize: tokens.fontSizeBase200,
+    flexShrink: 0,
+  },
   preview: {
     color: tokens.colorNeutralForeground2,
     fontSize: tokens.fontSizeBase200,
@@ -60,13 +77,24 @@ const useStyles = makeStyles({
     textOverflow: "ellipsis",
     whiteSpace: "nowrap",
   },
-  row2: { display: "flex", justifyContent: "space-between", alignItems: "center", gap: tokens.spacingHorizontalS },
+  row2: {
+    display: "flex",
+    justifyContent: "space-between",
+    alignItems: "center",
+    gap: tokens.spacingHorizontalS,
+  },
   empty: {
     padding: tokens.spacingHorizontalXXL,
     textAlign: "center",
     color: tokens.colorNeutralForeground3,
   },
-  pin: { fontSize: "10px", color: tokens.colorNeutralForeground3, letterSpacing: "0.06em", textTransform: "uppercase", padding: `${tokens.spacingVerticalXS} ${tokens.spacingHorizontalL}` },
+  pin: {
+    fontSize: "10px",
+    color: tokens.colorNeutralForeground3,
+    letterSpacing: "0.06em",
+    textTransform: "uppercase",
+    padding: `${tokens.spacingVerticalXS} ${tokens.spacingHorizontalL}`,
+  },
 });
 
 interface Props {
@@ -79,7 +107,15 @@ interface Props {
   onClose?: () => void; // mobile drawer close
 }
 
-export function ConversationSidebar({ conversations, activeId, loading, onSelect, onNew, onSearch, onClose }: Props) {
+export function ConversationSidebar({
+  conversations,
+  activeId,
+  loading,
+  onSelect,
+  onNew,
+  onSearch,
+  onClose,
+}: Props) {
   const s = useStyles();
   const [q, setQ] = useState("");
 
@@ -97,20 +133,35 @@ export function ConversationSidebar({ conversations, activeId, loading, onSelect
   const rest = filtered.filter((c) => !c.pinned && !c.archived);
 
   return (
-    <aside className={s.root} aria-label="Conversations">
+    <aside className={s.root} aria-label="Conversations" data-testid="conversations-sidebar">
       <div className={s.header}>
         <div className={s.titleRow}>
           <div className={s.title}>Chats</div>
           <div style={{ display: "flex", gap: 4 }}>
             <Tooltip content="Search all messages (⌘K)" relationship="label">
-              <Button aria-label="Search all messages" appearance="subtle" icon={<GlobeSearchRegular />} onClick={onSearch} />
+              <Button
+                aria-label="Search all messages"
+                appearance="subtle"
+                icon={<GlobeSearchRegular />}
+                onClick={onSearch}
+              />
             </Tooltip>
             <Tooltip content="New conversation" relationship="label">
-              <Button aria-label="New conversation" appearance="subtle" icon={<EditRegular />} onClick={onNew} />
+              <Button
+                aria-label="New conversation"
+                appearance="subtle"
+                icon={<EditRegular />}
+                onClick={onNew}
+              />
             </Tooltip>
             {onClose ? (
               <Tooltip content="Close" relationship="label">
-                <Button aria-label="Close sidebar" appearance="subtle" icon={<DismissRegular />} onClick={onClose} />
+                <Button
+                  aria-label="Close sidebar"
+                  appearance="subtle"
+                  icon={<DismissRegular />}
+                  onClick={onClose}
+                />
               </Tooltip>
             ) : null}
           </div>
@@ -148,7 +199,15 @@ export function ConversationSidebar({ conversations, activeId, loading, onSelect
   );
 }
 
-function Row({ c, active, onSelect }: { c: Conversation; active: boolean; onSelect: (id: string) => void }) {
+function Row({
+  c,
+  active,
+  onSelect,
+}: {
+  c: Conversation;
+  active: boolean;
+  onSelect: (id: string) => void;
+}) {
   const s = useStyles();
   const avatar = conversationAvatar(c);
   const title = conversationTitle(c);
@@ -160,18 +219,29 @@ function Row({ c, active, onSelect }: { c: Conversation; active: boolean; onSele
       type="button"
       className={active ? `${s.item} ${s.itemActive}` : s.item}
       onClick={() => onSelect(c.id)}
+      aria-label={`Open conversation ${title}`}
       aria-current={active ? "page" : undefined}
+      data-testid={`conversation-${c.id}`}
     >
-      <Avatar name={avatar.name} image={avatar.image} presence={avatar.presence} showPresence={c.kind === "dm"} />
+      <Avatar
+        name={avatar.name}
+        image={avatar.image}
+        presence={avatar.presence}
+        showPresence={c.kind === "dm"}
+      />
       <div className={s.content}>
         <div className={s.row1}>
           <span className={s.name}>{title}</span>
-          {c.lastMessage ? <span className={s.timestamp}>{formatRelative(c.lastMessage.createdAt)}</span> : null}
+          {c.lastMessage ? (
+            <span className={s.timestamp}>{formatRelative(c.lastMessage.createdAt)}</span>
+          ) : null}
         </div>
         <div className={s.row2}>
           <span className={s.preview}>{preview}</span>
           {c.unreadCount > 0 ? (
-            <Badge appearance="filled" color="brand" size="small">{c.unreadCount}</Badge>
+            <Badge appearance="filled" color="brand" size="small">
+              {c.unreadCount}
+            </Badge>
           ) : null}
         </div>
       </div>

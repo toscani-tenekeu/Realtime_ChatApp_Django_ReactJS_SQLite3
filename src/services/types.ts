@@ -103,7 +103,9 @@ export interface AuthService {
   requestPasswordReset(email: string): Promise<void>;
   resetPassword(input: { token: string; password: string }): Promise<void>;
 
-  updateProfile(patch: Partial<Pick<User, "displayName" | "username" | "bio" | "avatarUrl">>): Promise<User>;
+  updateProfile(
+    patch: Partial<Pick<User, "displayName" | "username" | "bio" | "avatarUrl">>,
+  ): Promise<User>;
   changePassword(input: { current: string; next: string }): Promise<void>;
   deleteAccount(password: string): Promise<void>;
 
@@ -152,7 +154,10 @@ export interface ChatService {
   forwardMessage(input: { messageId: ID; conversationIds: ID[] }): Promise<void>;
   searchMessages(query: string): Promise<SearchHit[]>;
 
-  updateConversation(id: ID, patch: { name?: string; description?: string; avatarUrl?: string }): Promise<Conversation>;
+  updateConversation(
+    id: ID,
+    patch: { name?: string; description?: string; avatarUrl?: string },
+  ): Promise<Conversation>;
   addMembers(conversationId: ID, memberIds: ID[]): Promise<Conversation>;
   removeMember(conversationId: ID, userId: ID): Promise<Conversation>;
   promoteAdmin(conversationId: ID, userId: ID): Promise<Conversation>;

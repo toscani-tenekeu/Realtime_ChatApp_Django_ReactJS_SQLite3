@@ -72,7 +72,12 @@ export default function ProfilePage() {
     setSaving(true);
     setError(null);
     try {
-      await updateProfile({ displayName: displayName.trim(), username: username.trim(), bio: bio.trim(), avatarUrl: avatarUrl.trim() || undefined });
+      await updateProfile({
+        displayName: displayName.trim(),
+        username: username.trim(),
+        bio: bio.trim(),
+        avatarUrl: avatarUrl.trim() || undefined,
+      });
       toast.show({ title: "Profile updated", intent: "success" });
     } catch (e) {
       setError((e as Error).message);
@@ -84,17 +89,40 @@ export default function ProfilePage() {
   return (
     <div className={s.root}>
       <div className={s.topbar}>
-        <Button appearance="subtle" icon={<ArrowLeftRegular />} onClick={() => navigate("/chat")} aria-label="Back">Back</Button>
-        <Text weight="semibold" size={400}>Your profile</Text>
+        <Button
+          appearance="subtle"
+          icon={<ArrowLeftRegular />}
+          onClick={() => navigate("/chat")}
+          aria-label="Back"
+        >
+          Back
+        </Button>
+        <Text weight="semibold" size={400}>
+          Your profile
+        </Text>
       </div>
       <div className={s.container}>
         <div className={s.card}>
           <div className={s.header}>
-            <Avatar name={displayName || user.displayName} image={avatarUrl || user.avatarUrl} size={96} />
+            <Avatar
+              name={displayName || user.displayName}
+              image={avatarUrl || user.avatarUrl}
+              size={96}
+            />
             <div>
-              <Text size={500} weight="semibold">{displayName || user.displayName}</Text>
-              <div><Text size={200} style={{ color: tokens.colorNeutralForeground3 }}>@{username || user.username}</Text></div>
-              <div><Text size={200} style={{ color: tokens.colorNeutralForeground3 }}>{user.email}</Text></div>
+              <Text size={500} weight="semibold">
+                {displayName || user.displayName}
+              </Text>
+              <div>
+                <Text size={200} style={{ color: tokens.colorNeutralForeground3 }}>
+                  @{username || user.username}
+                </Text>
+              </div>
+              <div>
+                <Text size={200} style={{ color: tokens.colorNeutralForeground3 }}>
+                  {user.email}
+                </Text>
+              </div>
             </div>
           </div>
           <Divider />
@@ -105,7 +133,11 @@ export default function ProfilePage() {
             <Input value={username} onChange={(_, d) => setUsername(d.value)} contentBefore="@" />
           </Field>
           <Field label="Avatar URL" hint="Paste a link to an image (optional).">
-            <Input value={avatarUrl} onChange={(_, d) => setAvatarUrl(d.value)} placeholder="https://…" />
+            <Input
+              value={avatarUrl}
+              onChange={(_, d) => setAvatarUrl(d.value)}
+              placeholder="https://…"
+            />
           </Field>
           <Field label="Bio">
             <Textarea value={bio} onChange={(_, d) => setBio(d.value)} rows={3} maxLength={160} />
@@ -115,7 +147,9 @@ export default function ProfilePage() {
             <Button appearance="primary" icon={<SaveRegular />} onClick={onSave} disabled={saving}>
               {saving ? "Saving…" : "Save changes"}
             </Button>
-            <Button appearance="secondary" onClick={() => navigate("/chat")}>Cancel</Button>
+            <Button appearance="secondary" onClick={() => navigate("/chat")}>
+              Cancel
+            </Button>
           </div>
         </div>
       </div>

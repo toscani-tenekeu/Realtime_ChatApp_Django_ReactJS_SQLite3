@@ -1,4 +1,15 @@
-import { Button, Menu, MenuItem, MenuList, MenuPopover, MenuTrigger, Tooltip, makeStyles, tokens, Text } from "@fluentui/react-components";
+import {
+  Button,
+  Menu,
+  MenuItem,
+  MenuList,
+  MenuPopover,
+  MenuTrigger,
+  Tooltip,
+  makeStyles,
+  tokens,
+  Text,
+} from "@fluentui/react-components";
 import {
   ArrowLeftRegular,
   MoreHorizontalRegular,
@@ -14,7 +25,11 @@ import {
 import type { Conversation } from "@/services/types";
 import { Avatar } from "@/components/Avatar";
 import { chatService } from "@/services";
-import { conversationAvatar, conversationSubtitle, conversationTitle } from "@/features/chat/helpers";
+import {
+  conversationAvatar,
+  conversationSubtitle,
+  conversationTitle,
+} from "@/features/chat/helpers";
 
 const useStyles = makeStyles({
   root: {
@@ -45,24 +60,58 @@ export function ChatHeader({ conversation, onBack, onOpenDetails, onOpenSearch }
     <div className={s.root}>
       {onBack ? (
         <Tooltip content="Back" relationship="label">
-          <Button aria-label="Back to conversations" appearance="subtle" icon={<ArrowLeftRegular />} onClick={onBack} />
+          <Button
+            aria-label="Back to conversations"
+            appearance="subtle"
+            icon={<ArrowLeftRegular />}
+            onClick={onBack}
+          />
         </Tooltip>
       ) : null}
-      <Avatar name={avatar.name} image={avatar.image} presence={avatar.presence} showPresence={conversation.kind === "dm"} size={36} />
-      <button className={s.info} onClick={onOpenDetails} aria-label="View conversation details" style={{ background: "transparent", border: "none", textAlign: "left" }}>
-        <Text className={s.title} truncate wrap={false}>{conversationTitle(conversation)}</Text>
-        <Text className={s.subtitle} truncate wrap={false}>{conversationSubtitle(conversation)}</Text>
+      <Avatar
+        name={avatar.name}
+        image={avatar.image}
+        presence={avatar.presence}
+        showPresence={conversation.kind === "dm"}
+        size={36}
+      />
+      <button
+        className={s.info}
+        onClick={onOpenDetails}
+        aria-label="View conversation details"
+        style={{ background: "transparent", border: "none", textAlign: "left" }}
+      >
+        <Text className={s.title} truncate wrap={false}>
+          {conversationTitle(conversation)}
+        </Text>
+        <Text className={s.subtitle} truncate wrap={false}>
+          {conversationSubtitle(conversation)}
+        </Text>
       </button>
       <Tooltip content="Search messages" relationship="label">
-        <Button aria-label="Search messages" appearance="subtle" icon={<SearchRegular />} onClick={onOpenSearch} />
+        <Button
+          aria-label="Search messages"
+          appearance="subtle"
+          icon={<SearchRegular />}
+          onClick={onOpenSearch}
+        />
       </Tooltip>
       <Tooltip content="Details" relationship="label">
-        <Button aria-label="Conversation details" appearance="subtle" icon={<InfoRegular />} onClick={onOpenDetails} />
+        <Button
+          aria-label="Conversation details"
+          appearance="subtle"
+          icon={<InfoRegular />}
+          onClick={onOpenDetails}
+        />
       </Tooltip>
       <Menu>
         <MenuTrigger disableButtonEnhancement>
           <Tooltip content="Conversation options" relationship="label">
-            <Button aria-label="Conversation options" appearance="subtle" icon={<MoreHorizontalRegular />} />
+            <Button
+              aria-label="Conversation options"
+              appearance="subtle"
+              icon={<MoreHorizontalRegular />}
+            />
           </Tooltip>
         </MenuTrigger>
         <MenuPopover>
@@ -81,7 +130,9 @@ export function ChatHeader({ conversation, onBack, onOpenDetails, onOpenSearch }
             </MenuItem>
             <MenuItem
               icon={conversation.archived ? <ArchiveArrowBackRegular /> : <ArchiveRegular />}
-              onClick={() => chatService.archiveConversation(conversation.id, !conversation.archived)}
+              onClick={() =>
+                chatService.archiveConversation(conversation.id, !conversation.archived)
+              }
             >
               {conversation.archived ? "Unarchive" : "Archive"} chat
             </MenuItem>

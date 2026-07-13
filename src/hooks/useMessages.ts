@@ -90,7 +90,9 @@ export function useMessages(conversationId: string | undefined) {
     async (messageId: string) => {
       const m = messages.find((x) => x.id === messageId);
       if (!m || !conversationId) return;
-      setMessages((prev) => prev.map((x) => (x.id === messageId ? { ...x, status: "sending" } : x)));
+      setMessages((prev) =>
+        prev.map((x) => (x.id === messageId ? { ...x, status: "sending" } : x)),
+      );
       try {
         await chatService.sendMessage({
           conversationId,
@@ -100,7 +102,9 @@ export function useMessages(conversationId: string | undefined) {
           clientId: messageId,
         });
       } catch (e) {
-        setMessages((prev) => prev.map((x) => (x.id === messageId ? { ...x, status: "failed" } : x)));
+        setMessages((prev) =>
+          prev.map((x) => (x.id === messageId ? { ...x, status: "failed" } : x)),
+        );
       }
     },
     [messages, conversationId],

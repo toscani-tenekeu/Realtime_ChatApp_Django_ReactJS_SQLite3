@@ -8,6 +8,7 @@ pnpm-debug.log*
 lerna-debug.log*
 
 node_modules
+.npm-cache/
 dist
 dist-ssr
 .output
@@ -15,6 +16,14 @@ dist-ssr
 .tanstack/**
 .nitro
 *.local
+playwright-report/
+test-results/
+
+# Django development artifacts
+backend/db.sqlite3
+backend/media/
+**/__pycache__/
+*.py[cod]
 
 # Wrangler / Cloudflare
 .wrangler/
