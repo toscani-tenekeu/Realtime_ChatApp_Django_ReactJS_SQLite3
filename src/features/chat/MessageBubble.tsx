@@ -164,9 +164,10 @@ interface Props {
   onReply: (m: Message) => void;
   onRetry?: (id: string) => void;
   onDiscard?: (id: string) => void;
+  onForward?: (m: Message) => void;
 }
 
-export function MessageBubble({ message, showAvatar, onReply, onRetry, onDiscard }: Props) {
+export function MessageBubble({ message, showAvatar, onReply, onRetry, onDiscard, onForward }: Props) {
   const s = useStyles();
   const toast = useToast();
   const mine = message.authorId === "u_me";
