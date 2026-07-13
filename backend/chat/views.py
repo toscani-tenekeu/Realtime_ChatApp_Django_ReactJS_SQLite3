@@ -27,6 +27,15 @@ def member_conversation(user, pk):
 
 @api_view(["GET"])
 @permission_classes([AllowAny])
+def api_root(request):
+    return Response({
+        "name": "Realtime ChatApp API",
+        "status": "ok",
+        "health": request.build_absolute_uri("/api/health/"),
+    })
+
+@api_view(["GET"])
+@permission_classes([AllowAny])
 def health(request):
     return Response({"status": "ok"})
 
