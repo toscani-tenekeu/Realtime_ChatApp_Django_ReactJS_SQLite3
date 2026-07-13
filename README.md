@@ -31,6 +31,7 @@ Download the editable project overview deck: [Realtime_ChatApp_Django_ReactJS_SQ
 - Email or username sign-in with token-based auth
 - Direct messages and group conversations
 - Replies, reactions, forwarding, typing events, and read state
+- One-to-one audio and video calls with WebRTC (ring, accept/decline, mute, camera toggle, and hang up)
 - Profile, password reset, blocked users, and user settings
 - Deterministic demo seed for local demos and E2E runs
 
@@ -53,6 +54,18 @@ npm run dev -- --host 127.0.0.1 --port 4173
 Open `http://127.0.0.1:4173/`. The backend API is available at `http://127.0.0.1:8000/api/` and WebSockets at `ws://127.0.0.1:8000/ws/chat/`.
 
 Set `VITE_API_URL` when the backend is hosted elsewhere. Local backend CORS now accepts both `4173` and `4174`, so the app works in normal development and Playwright E2E mode.
+
+## Audio and video calls
+
+Open a direct-message conversation and use the phone or camera buttons in the header. Calls use the existing authenticated Django Channels WebSocket for signaling and WebRTC for the media stream. The first version intentionally supports one-to-one calls; group-call routing is left for a future SFU-based module.
+
+Browsers require microphone/camera permission and a secure origin (`localhost` is allowed during development). On the same LAN, host ICE candidates are often enough. For users behind NAT or when running through ngrok, configure a STUN/TURN list with `VITE_RTC_ICE_SERVERS`, for example:
+
+```powershell
+$env:VITE_RTC_ICE_SERVERS='[{"urls":"stun:stun.l.google.com:19302"}]'
+```
+
+The current SQLite database and in-memory Channels layer are suitable for local or single-process demos. A production deployment should use Redis for the channel layer and a TURN service for reliable media connectivity across restrictive networks.
 
 ## Production-like local run
 

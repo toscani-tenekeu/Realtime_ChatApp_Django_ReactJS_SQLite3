@@ -21,6 +21,8 @@ import {
   ArchiveArrowBackRegular,
   InfoRegular,
   SearchRegular,
+  CallRegular,
+  VideoRegular,
 } from "@fluentui/react-icons";
 import type { Conversation } from "@/services/types";
 import { Avatar } from "@/components/Avatar";
@@ -62,9 +64,16 @@ interface Props {
   onBack?: () => void;
   onOpenDetails: () => void;
   onOpenSearch: () => void;
+  onStartCall?: (kind: "audio" | "video") => void;
 }
 
-export function ChatHeader({ conversation, onBack, onOpenDetails, onOpenSearch }: Props) {
+export function ChatHeader({
+  conversation,
+  onBack,
+  onOpenDetails,
+  onOpenSearch,
+  onStartCall,
+}: Props) {
   const s = useStyles();
   const avatar = conversationAvatar(conversation);
   return (
@@ -115,6 +124,26 @@ export function ChatHeader({ conversation, onBack, onOpenDetails, onOpenSearch }
           onClick={onOpenDetails}
         />
       </Tooltip>
+      {conversation.kind === "dm" && onStartCall ? (
+        <>
+          <Tooltip content="Start audio call" relationship="label">
+            <Button
+              aria-label="Start audio call"
+              appearance="subtle"
+              icon={<CallRegular />}
+              onClick={() => onStartCall("audio")}
+            />
+          </Tooltip>
+          <Tooltip content="Start video call" relationship="label">
+            <Button
+              aria-label="Start video call"
+              appearance="subtle"
+              icon={<VideoRegular />}
+              onClick={() => onStartCall("video")}
+            />
+          </Tooltip>
+        </>
+      ) : null}
       <Menu>
         <MenuTrigger disableButtonEnhancement>
           <Tooltip content="Conversation options" relationship="label">

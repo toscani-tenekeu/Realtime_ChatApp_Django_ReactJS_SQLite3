@@ -18,7 +18,9 @@ test("new message appears in real time for another signed-in user", async ({ bro
     await adaPage.getByTestId("message-input").fill(message);
     await adaPage.getByTestId("send-message").click();
 
-    await expect(youPage.getByText(message)).toBeVisible({ timeout: 15_000 });
+    await expect(youPage.getByTestId("message-timeline").getByText(message)).toBeVisible({
+      timeout: 15_000,
+    });
   } finally {
     await youContext.close();
     await adaContext.close();

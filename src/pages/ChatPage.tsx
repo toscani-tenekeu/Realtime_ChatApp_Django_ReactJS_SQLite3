@@ -33,6 +33,9 @@ import { NewConversationDialog } from "@/features/chat/NewConversationDialog";
 import { ConversationDetailsDrawer } from "@/features/chat/ConversationDetailsDrawer";
 import { ForwardMessageDialog } from "@/features/chat/ForwardMessageDialog";
 import { GlobalSearchDialog } from "@/features/chat/GlobalSearchDialog";
+import { CallOverlay } from "@/features/calls/CallOverlay";
+import { useCallSession } from "@/features/calls/useCallSession";
+import { conversationTitle } from "@/features/chat/helpers";
 import { useConversations } from "@/hooks/useConversations";
 import { useMessages } from "@/hooks/useMessages";
 import { useMediaQuery } from "@/hooks/useMediaQuery";
@@ -117,6 +120,8 @@ export default function ChatPage() {
   const params = useParams<{ conversationId?: string }>();
   const isMobile = useMediaQuery("(max-width: 768px)");
   const { user, signOut } = useAuth();
+  const { call, startCall, acceptCall, rejectCall, hangup, toggleMute, toggleCamera } =
+    useCallSession(user?.id);
 
   const { conversations, loading: convLoading } = useConversations();
   const [drawerOpen, setDrawerOpen] = useState(false);
@@ -130,6 +135,10 @@ export default function ChatPage() {
   const active = useMemo(
     () => conversations.find((c) => c.id === activeId),
     [conversations, activeId],
+  );
+  const callConversation = useMemo(
+    () => conversations.find((conversation) => conversation.id === call?.conversationId) ?? active,
+    [active, call?.conversationId, conversations],
   );
 
   const { messages, loading, loadingMore, hasMore, loadMore, send, retry, removeLocal } =
@@ -288,6 +297,7 @@ export default function ChatPage() {
                 onBack={isMobile ? () => setDrawerOpen(true) : undefined}
                 onOpenDetails={() => setDetailsOpen(true)}
                 onOpenSearch={() => setSearchOpen(true)}
+                onStartCall={(kind) => void startCall(active, kind)}
               />
               <MessageTimeline
                 messages={messages}
@@ -357,6 +367,17 @@ export default function ChatPage() {
         onOpenChange={setSearchOpen}
         onNavigate={(id) => navigate(`/chat/${id}`)}
       />
+      {call && callConversation ? (
+        <CallOverlay
+          call={call}
+          remoteName={conversationTitle(callConversation)}
+          onAccept={() => void acceptCall()}
+          onReject={() => void rejectCall()}
+          onHangup={() => void hangup()}
+          onToggleMute={toggleMute}
+          onToggleCamera={toggleCamera}
+        />
+      ) : null}
     </div>
   );
 }
