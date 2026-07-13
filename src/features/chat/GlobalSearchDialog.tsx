@@ -19,8 +19,8 @@ import { conversationAvatar, conversationTitle, getUser } from "@/features/chat/
 import { formatRelative } from "@/utils/date";
 
 const useStyles = makeStyles({
-  content: { display: "flex", flexDirection: "column", gap: tokens.spacingVerticalM, minHeight: 380 },
-  hits: { display: "flex", flexDirection: "column", maxHeight: 420, overflowY: "auto" },
+  content: { display: "flex", flexDirection: "column", gap: tokens.spacingVerticalM, minHeight: "380px" },
+  hits: { display: "flex", flexDirection: "column", maxHeight: "420px", overflowY: "auto" },
   row: {
     display: "flex", alignItems: "flex-start", gap: tokens.spacingHorizontalM,
     padding: tokens.spacingHorizontalM,
@@ -29,7 +29,7 @@ const useStyles = makeStyles({
     textAlign: "left", color: tokens.colorNeutralForeground1, width: "100%",
     ":hover": { backgroundColor: tokens.colorNeutralBackground2Hover },
   },
-  info: { flex: 1, minWidth: 0, display: "flex", flexDirection: "column", gap: 2 },
+  info: { flex: 1, minWidth: 0, display: "flex", flexDirection: "column", gap: "2px" },
   meta: { display: "flex", justifyContent: "space-between", gap: tokens.spacingHorizontalM },
   body: {
     color: tokens.colorNeutralForeground2,
@@ -39,7 +39,7 @@ const useStyles = makeStyles({
     WebkitLineClamp: 2,
     WebkitBoxOrient: "vertical",
   },
-  highlight: { backgroundColor: tokens.colorBrandBackground2, padding: "0 2px", borderRadius: 2 },
+  highlight: { backgroundColor: tokens.colorBrandBackground2, padding: "0 2px", borderRadius: "2px" },
 });
 
 interface Props {

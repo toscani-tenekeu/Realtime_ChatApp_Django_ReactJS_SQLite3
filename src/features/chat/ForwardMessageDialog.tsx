@@ -21,7 +21,7 @@ import { conversationAvatar, conversationTitle } from "@/features/chat/helpers";
 import { useToast } from "@/components/Toaster";
 
 const useStyles = makeStyles({
-  wrap: { display: "flex", flexDirection: "column", gap: tokens.spacingVerticalM, minHeight: 360 },
+  wrap: { display: "flex", flexDirection: "column", gap: tokens.spacingVerticalM, minHeight: "360px" },
   preview: {
     padding: tokens.spacingHorizontalM,
     borderRadius: tokens.borderRadiusMedium,
@@ -32,7 +32,7 @@ const useStyles = makeStyles({
     display: "flex", flexDirection: "column",
     border: `1px solid ${tokens.colorNeutralStroke2}`,
     borderRadius: tokens.borderRadiusMedium,
-    maxHeight: 280, overflowY: "auto",
+    maxHeight: "280px", overflowY: "auto",
   },
   row: {
     display: "flex", alignItems: "center", gap: tokens.spacingHorizontalM,
