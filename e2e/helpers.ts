@@ -1,7 +1,7 @@
 import { expect, type Page } from "@playwright/test";
 
 export const demoUsers = {
-  you: { identifier: "admin@example.com", password: "user1234" },
+  you: { identifier: "admin@example.com", password: "admin123" },
   ada: { identifier: "ada@example.com", password: "user1234" },
   linus: { identifier: "linus@example.com", password: "user1234" },
 } as const;

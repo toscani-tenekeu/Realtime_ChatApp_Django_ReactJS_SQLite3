@@ -7,7 +7,7 @@ from chat.models import Conversation, Membership, Message, Reaction, User, UserS
 
 
 DEMO_PASSWORD = "user1234"
-OWNER_PASSWORD = "user1234"
+OWNER_PASSWORD = "admin123"
 USERS = [
     ("u_me", "toscani", "admin@example.com", "Toscani", "online", "Product designer. Coffee first."),
     ("u_ada", "ada", "ada@example.com", "Ada Lovelace", "online", "Notes on notes."),
@@ -133,6 +133,7 @@ class Command(BaseCommand):
         self.stdout.write(
             self.style.SUCCESS(
                 f"Demo database ready: {len(USERS)} users, {len(CONVERSATIONS)} conversations, "
-                f"{len(MESSAGES)} messages. Demo password: {DEMO_PASSWORD}"
+                f"{len(MESSAGES)} messages. Toscani password: {OWNER_PASSWORD}; "
+                f"other demo users: {DEMO_PASSWORD}"
             )
         )
