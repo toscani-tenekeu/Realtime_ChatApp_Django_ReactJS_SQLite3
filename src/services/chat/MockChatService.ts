@@ -243,7 +243,10 @@ export class MockChatService implements ChatService {
       .slice(0, 40);
   }
 
-  async updateConversation(id: ID, patch: { name?: string; description?: string; avatarUrl?: string }) {
+  async updateConversation(
+    id: ID,
+    patch: { name?: string; description?: string; avatarUrl?: string },
+  ) {
     await delay(180);
     const c = this.mustGet(id);
     if (c.kind !== "group") throw new Error("Only groups can be renamed.");

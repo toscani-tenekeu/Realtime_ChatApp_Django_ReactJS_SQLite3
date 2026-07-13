@@ -1,8 +1,9 @@
 import { seedUsers } from "@/mocks/seed";
+import { cachedUser } from "@/services/api/identity";
 import type { Conversation, User } from "@/services/types";
 
 export function getUser(id: string): User | undefined {
-  return seedUsers.find((u) => u.id === id);
+  return cachedUser(id) ?? seedUsers.find((u) => u.id === id);
 }
 
 export function conversationTitle(c: Conversation, meId = "u_me"): string {

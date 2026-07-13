@@ -6,9 +6,16 @@ interface Ctx {
   user: User | null;
   loading: boolean;
   signIn: (input: { identifier: string; password: string; remember: boolean }) => Promise<void>;
-  signUp: (input: { displayName: string; username: string; email: string; password: string }) => Promise<void>;
+  signUp: (input: {
+    displayName: string;
+    username: string;
+    email: string;
+    password: string;
+  }) => Promise<void>;
   signOut: () => Promise<void>;
-  updateProfile: (patch: Partial<Pick<User, "displayName" | "username" | "bio" | "avatarUrl">>) => Promise<void>;
+  updateProfile: (
+    patch: Partial<Pick<User, "displayName" | "username" | "bio" | "avatarUrl">>,
+  ) => Promise<void>;
   refresh: () => Promise<void>;
 }
 

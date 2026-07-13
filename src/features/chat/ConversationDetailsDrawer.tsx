@@ -45,14 +45,24 @@ import type { Attachment, Conversation, User } from "@/services/types";
 import { conversationAvatar, conversationTitle, getUser } from "@/features/chat/helpers";
 
 const useStyles = makeStyles({
-  content: { display: "flex", flexDirection: "column", gap: tokens.spacingVerticalM, padding: tokens.spacingHorizontalL },
+  content: {
+    display: "flex",
+    flexDirection: "column",
+    gap: tokens.spacingVerticalM,
+    padding: tokens.spacingHorizontalL,
+  },
   header: {
-    display: "flex", flexDirection: "column", alignItems: "center", gap: tokens.spacingVerticalS,
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "center",
+    gap: tokens.spacingVerticalS,
     padding: tokens.spacingHorizontalL,
     borderBottom: `1px solid ${tokens.colorNeutralStroke2}`,
   },
   memberRow: {
-    display: "flex", alignItems: "center", gap: tokens.spacingHorizontalM,
+    display: "flex",
+    alignItems: "center",
+    gap: tokens.spacingHorizontalM,
     padding: tokens.spacingHorizontalS,
     borderRadius: tokens.borderRadiusMedium,
     ":hover": { backgroundColor: tokens.colorNeutralBackground2Hover },
@@ -76,7 +86,9 @@ const useStyles = makeStyles({
     borderRadius: tokens.borderRadiusMedium,
   },
   fileRow: {
-    display: "flex", alignItems: "center", gap: tokens.spacingHorizontalS,
+    display: "flex",
+    alignItems: "center",
+    gap: tokens.spacingHorizontalS,
     padding: tokens.spacingHorizontalS,
     borderRadius: tokens.borderRadiusMedium,
     backgroundColor: tokens.colorNeutralBackground3,
@@ -84,7 +96,9 @@ const useStyles = makeStyles({
     color: tokens.colorNeutralForeground1,
   },
   addRow: {
-    display: "flex", flexDirection: "column", gap: tokens.spacingVerticalS,
+    display: "flex",
+    flexDirection: "column",
+    gap: tokens.spacingVerticalS,
     padding: tokens.spacingHorizontalS,
     border: `1px dashed ${tokens.colorNeutralStroke2}`,
     borderRadius: tokens.borderRadiusMedium,
@@ -144,12 +158,17 @@ export function ConversationDetailsDrawer({ open, onOpenChange, conversation, on
       if (cancelled) return;
       setCandidates(res.filter((u) => !conversation.memberIds.includes(u.id)));
     });
-    return () => { cancelled = true; };
+    return () => {
+      cancelled = true;
+    };
   }, [showAdd, q, conversation.memberIds]);
 
   async function saveDetails() {
     try {
-      await chatService.updateConversation(conversation.id, { name: name.trim(), description: description.trim() });
+      await chatService.updateConversation(conversation.id, {
+        name: name.trim(),
+        description: description.trim(),
+      });
       toast.show({ title: "Group updated", intent: "success" });
       setEditing(false);
     } catch (e) {
@@ -172,16 +191,30 @@ export function ConversationDetailsDrawer({ open, onOpenChange, conversation, on
   }
 
   const images = useMemo(() => attachments?.filter((a) => a.kind === "image") ?? [], [attachments]);
-  const docs = useMemo(() => attachments?.filter((a) => a.kind === "document") ?? [], [attachments]);
+  const docs = useMemo(
+    () => attachments?.filter((a) => a.kind === "document") ?? [],
+    [attachments],
+  );
 
   return (
     <>
-      <Drawer open={open} onOpenChange={(_, d) => onOpenChange(d.open)} position="end" type="overlay" style={{ width: "min(400px, 95vw)" }}>
+      <Drawer
+        open={open}
+        onOpenChange={(_, d) => onOpenChange(d.open)}
+        position="end"
+        type="overlay"
+        style={{ width: "min(400px, 95vw)" }}
+      >
         <DrawerHeader>
           <DrawerHeaderTitle
             action={
               <Tooltip content="Close" relationship="label">
-                <Button appearance="subtle" aria-label="Close" icon={<DismissRegular />} onClick={() => onOpenChange(false)} />
+                <Button
+                  appearance="subtle"
+                  aria-label="Close"
+                  icon={<DismissRegular />}
+                  onClick={() => onOpenChange(false)}
+                />
               </Tooltip>
             }
           >
@@ -190,12 +223,24 @@ export function ConversationDetailsDrawer({ open, onOpenChange, conversation, on
         </DrawerHeader>
         <DrawerBody style={{ padding: 0 }}>
           <div className={s.header}>
-            <Avatar name={avatar.name} image={avatar.image} presence={avatar.presence} showPresence={!isGroup} size={72} />
-            <Text weight="semibold" size={500}>{title}</Text>
+            <Avatar
+              name={avatar.name}
+              image={avatar.image}
+              presence={avatar.presence}
+              showPresence={!isGroup}
+              size={72}
+            />
+            <Text weight="semibold" size={500}>
+              {title}
+            </Text>
             {isGroup ? (
-              <Text size={200} style={{ color: tokens.colorNeutralForeground3 }}>{conversation.memberIds.length} members</Text>
+              <Text size={200} style={{ color: tokens.colorNeutralForeground3 }}>
+                {conversation.memberIds.length} members
+              </Text>
             ) : other ? (
-              <Text size={200} style={{ color: tokens.colorNeutralForeground3 }}>@{other.username}</Text>
+              <Text size={200} style={{ color: tokens.colorNeutralForeground3 }}>
+                @{other.username}
+              </Text>
             ) : null}
           </div>
 
@@ -217,22 +262,40 @@ export function ConversationDetailsDrawer({ open, onOpenChange, conversation, on
                         <Input value={name} onChange={(_, d) => setName(d.value)} />
                       </Field>
                       <Field label="Description">
-                        <Textarea value={description} onChange={(_, d) => setDescription(d.value)} rows={3} />
+                        <Textarea
+                          value={description}
+                          onChange={(_, d) => setDescription(d.value)}
+                          rows={3}
+                        />
                       </Field>
                       <div style={{ display: "flex", gap: tokens.spacingHorizontalS }}>
-                        <Button appearance="primary" onClick={saveDetails}>Save</Button>
-                        <Button appearance="secondary" onClick={() => setEditing(false)}>Cancel</Button>
+                        <Button appearance="primary" onClick={saveDetails}>
+                          Save
+                        </Button>
+                        <Button appearance="secondary" onClick={() => setEditing(false)}>
+                          Cancel
+                        </Button>
                       </div>
                     </>
                   ) : (
                     <>
                       <div>
                         <Text weight="semibold">Description</Text>
-                        <div><Text style={{ color: tokens.colorNeutralForeground2 }}>{conversation.description || "No description yet."}</Text></div>
+                        <div>
+                          <Text style={{ color: tokens.colorNeutralForeground2 }}>
+                            {conversation.description || "No description yet."}
+                          </Text>
+                        </div>
                       </div>
                       {meIsAdmin ? (
                         <div>
-                          <Button appearance="secondary" icon={<EditRegular />} onClick={() => setEditing(true)}>Edit group</Button>
+                          <Button
+                            appearance="secondary"
+                            icon={<EditRegular />}
+                            onClick={() => setEditing(true)}
+                          >
+                            Edit group
+                          </Button>
                         </div>
                       ) : null}
                     </>
@@ -241,23 +304,39 @@ export function ConversationDetailsDrawer({ open, onOpenChange, conversation, on
                   <>
                     <div>
                       <Text weight="semibold">Bio</Text>
-                      <div><Text style={{ color: tokens.colorNeutralForeground2 }}>{other.bio || "No bio yet."}</Text></div>
+                      <div>
+                        <Text style={{ color: tokens.colorNeutralForeground2 }}>
+                          {other.bio || "No bio yet."}
+                        </Text>
+                      </div>
                     </div>
                     <div>
                       <Text weight="semibold">Email</Text>
-                      <div><Text style={{ color: tokens.colorNeutralForeground2 }}>{other.email}</Text></div>
+                      <div>
+                        <Text style={{ color: tokens.colorNeutralForeground2 }}>{other.email}</Text>
+                      </div>
                     </div>
                   </>
                 ) : null}
                 <Divider />
-                <div style={{ display: "flex", flexDirection: "column", gap: tokens.spacingVerticalS }}>
+                <div
+                  style={{ display: "flex", flexDirection: "column", gap: tokens.spacingVerticalS }}
+                >
                   {!isGroup && other ? (
-                    <Button appearance="secondary" icon={<PersonProhibitedRegular />} onClick={() => setConfirmBlock(other)}>
+                    <Button
+                      appearance="secondary"
+                      icon={<PersonProhibitedRegular />}
+                      onClick={() => setConfirmBlock(other)}
+                    >
                       Block {other.displayName}
                     </Button>
                   ) : null}
                   {isGroup ? (
-                    <Button appearance="secondary" icon={<SignOutRegular />} onClick={() => setConfirmLeave(true)}>
+                    <Button
+                      appearance="secondary"
+                      icon={<SignOutRegular />}
+                      onClick={() => setConfirmLeave(true)}
+                    >
                       Leave group
                     </Button>
                   ) : null}
@@ -277,35 +356,55 @@ export function ConversationDetailsDrawer({ open, onOpenChange, conversation, on
               <>
                 {meIsAdmin ? (
                   <div className={s.addRow}>
-                    <Button appearance="secondary" icon={<PersonAddRegular />} onClick={() => setShowAdd((v) => !v)}>
+                    <Button
+                      appearance="secondary"
+                      icon={<PersonAddRegular />}
+                      onClick={() => setShowAdd((v) => !v)}
+                    >
                       {showAdd ? "Close" : "Add members"}
                     </Button>
                     {showAdd ? (
                       <>
-                        <Input placeholder="Search people" value={q} onChange={(_, d) => setQ(d.value)} />
+                        <Input
+                          placeholder="Search people"
+                          value={q}
+                          onChange={(_, d) => setQ(d.value)}
+                        />
                         <div style={{ maxHeight: 180, overflowY: "auto" }}>
                           {candidates.length === 0 ? (
-                            <Text size={200} style={{ color: tokens.colorNeutralForeground3 }}>No one to add.</Text>
-                          ) : candidates.map((u) => (
-                            <div key={u.id} className={s.memberRow}>
-                              <Avatar name={u.displayName} image={u.avatarUrl} size={32} />
-                              <div className={s.info}>
-                                <Text weight="semibold">{u.displayName}</Text>
-                                <Text size={200} style={{ color: tokens.colorNeutralForeground3 }}>@{u.username}</Text>
+                            <Text size={200} style={{ color: tokens.colorNeutralForeground3 }}>
+                              No one to add.
+                            </Text>
+                          ) : (
+                            candidates.map((u) => (
+                              <div key={u.id} className={s.memberRow}>
+                                <Avatar name={u.displayName} image={u.avatarUrl} size={32} />
+                                <div className={s.info}>
+                                  <Text weight="semibold">{u.displayName}</Text>
+                                  <Text
+                                    size={200}
+                                    style={{ color: tokens.colorNeutralForeground3 }}
+                                  >
+                                    @{u.username}
+                                  </Text>
+                                </div>
+                                <Button
+                                  size="small"
+                                  appearance="primary"
+                                  icon={<CheckmarkRegular />}
+                                  onClick={async () => {
+                                    await chatService.addMembers(conversation.id, [u.id]);
+                                    toast.show({
+                                      title: `Added ${u.displayName}`,
+                                      intent: "success",
+                                    });
+                                  }}
+                                >
+                                  Add
+                                </Button>
                               </div>
-                              <Button
-                                size="small"
-                                appearance="primary"
-                                icon={<CheckmarkRegular />}
-                                onClick={async () => {
-                                  await chatService.addMembers(conversation.id, [u.id]);
-                                  toast.show({ title: `Added ${u.displayName}`, intent: "success" });
-                                }}
-                              >
-                                Add
-                              </Button>
-                            </div>
-                          ))}
+                            ))
+                          )}
                         </div>
                       </>
                     ) : null}
@@ -319,38 +418,64 @@ export function ConversationDetailsDrawer({ open, onOpenChange, conversation, on
                   const isMe = id === "u_me";
                   return (
                     <div key={id} className={s.memberRow}>
-                      <Avatar name={u.displayName} image={u.avatarUrl} presence={u.presence} showPresence size={36} />
+                      <Avatar
+                        name={u.displayName}
+                        image={u.avatarUrl}
+                        presence={u.presence}
+                        showPresence
+                        size={36}
+                      />
                       <div className={s.info}>
                         <Text weight="semibold" truncate wrap={false}>
-                          {u.displayName}{isMe ? " (you)" : ""}
+                          {u.displayName}
+                          {isMe ? " (you)" : ""}
                         </Text>
-                        <Text size={200} style={{ color: tokens.colorNeutralForeground3 }} truncate wrap={false}>
-                          @{u.username} {isAdmin ? <span className={s.adminTag}>· admin</span> : null}
+                        <Text
+                          size={200}
+                          style={{ color: tokens.colorNeutralForeground3 }}
+                          truncate
+                          wrap={false}
+                        >
+                          @{u.username}{" "}
+                          {isAdmin ? <span className={s.adminTag}>· admin</span> : null}
                         </Text>
                       </div>
                       {meIsAdmin && !isMe ? (
                         <Menu>
                           <MenuTrigger disableButtonEnhancement>
-                            <Button aria-label={`Manage ${u.displayName}`} appearance="subtle" icon={<MoreVerticalRegular />} />
+                            <Button
+                              aria-label={`Manage ${u.displayName}`}
+                              appearance="subtle"
+                              icon={<MoreVerticalRegular />}
+                            />
                           </MenuTrigger>
                           <MenuPopover>
                             <MenuList>
                               {isAdmin ? (
                                 <MenuItem
                                   icon={<ShieldDismissRegular />}
-                                  onClick={async () => { await chatService.demoteAdmin(conversation.id, id); toast.show({ title: "Removed as admin", intent: "info" }); }}
+                                  onClick={async () => {
+                                    await chatService.demoteAdmin(conversation.id, id);
+                                    toast.show({ title: "Removed as admin", intent: "info" });
+                                  }}
                                 >
                                   Remove as admin
                                 </MenuItem>
                               ) : (
                                 <MenuItem
                                   icon={<ShieldPersonRegular />}
-                                  onClick={async () => { await chatService.promoteAdmin(conversation.id, id); toast.show({ title: "Promoted to admin", intent: "success" }); }}
+                                  onClick={async () => {
+                                    await chatService.promoteAdmin(conversation.id, id);
+                                    toast.show({ title: "Promoted to admin", intent: "success" });
+                                  }}
                                 >
                                   Make admin
                                 </MenuItem>
                               )}
-                              <MenuItem icon={<PersonSubtractRegular />} onClick={() => setConfirmRemove(id)}>
+                              <MenuItem
+                                icon={<PersonSubtractRegular />}
+                                onClick={() => setConfirmRemove(id)}
+                              >
                                 Remove from group
                               </MenuItem>
                             </MenuList>
@@ -365,11 +490,23 @@ export function ConversationDetailsDrawer({ open, onOpenChange, conversation, on
 
             {tab === "media" ? (
               !attachments ? (
-                <div style={{ display: "grid", placeItems: "center", padding: tokens.spacingVerticalXL }}>
+                <div
+                  style={{
+                    display: "grid",
+                    placeItems: "center",
+                    padding: tokens.spacingVerticalXL,
+                  }}
+                >
                   <Spinner size="tiny" label="Loading…" />
                 </div>
               ) : attachments.length === 0 ? (
-                <div style={{ textAlign: "center", padding: tokens.spacingVerticalXL, color: tokens.colorNeutralForeground3 }}>
+                <div
+                  style={{
+                    textAlign: "center",
+                    padding: tokens.spacingVerticalXL,
+                    color: tokens.colorNeutralForeground3,
+                  }}
+                >
                   <ImageRegular fontSize={32} />
                   <div style={{ marginTop: 8 }}>Nothing shared here yet.</div>
                 </div>
@@ -389,9 +526,17 @@ export function ConversationDetailsDrawer({ open, onOpenChange, conversation, on
                   ) : null}
                   {docs.length > 0 ? (
                     <>
-                      <Text weight="semibold" style={{ marginTop: tokens.spacingVerticalM }}>Files</Text>
+                      <Text weight="semibold" style={{ marginTop: tokens.spacingVerticalM }}>
+                        Files
+                      </Text>
                       {docs.map((a) => (
-                        <a key={a.id} href={a.url} target="_blank" rel="noreferrer" className={s.fileRow}>
+                        <a
+                          key={a.id}
+                          href={a.url}
+                          target="_blank"
+                          rel="noreferrer"
+                          className={s.fileRow}
+                        >
                           <DocumentRegular /> {a.name}
                         </a>
                       ))}

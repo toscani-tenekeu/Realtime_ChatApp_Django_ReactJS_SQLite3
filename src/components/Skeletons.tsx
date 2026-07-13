@@ -15,7 +15,13 @@ const useStyles = makeStyles({
     padding: tokens.spacingVerticalL,
   },
   msg: { display: "flex", gap: tokens.spacingHorizontalM, alignItems: "flex-start" },
-  msgCol: { display: "flex", flexDirection: "column", gap: tokens.spacingVerticalXS, flex: 1, maxWidth: "60%" },
+  msgCol: {
+    display: "flex",
+    flexDirection: "column",
+    gap: tokens.spacingVerticalXS,
+    flex: 1,
+    maxWidth: "60%",
+  },
 });
 
 export function ConversationListSkeleton() {
@@ -41,7 +47,11 @@ export function MessageTimelineSkeleton() {
     <Skeleton>
       <div className={styles.msgList}>
         {Array.from({ length: 5 }).map((_, i) => (
-          <div key={i} className={styles.msg} style={{ flexDirection: i % 2 ? "row-reverse" : "row" }}>
+          <div
+            key={i}
+            className={styles.msg}
+            style={{ flexDirection: i % 2 ? "row-reverse" : "row" }}
+          >
             <SkeletonItem shape="circle" size={32} />
             <div className={styles.msgCol}>
               <SkeletonItem size={12} style={{ width: "40%" }} />

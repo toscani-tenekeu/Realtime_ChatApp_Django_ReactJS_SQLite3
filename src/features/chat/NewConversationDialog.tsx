@@ -21,7 +21,12 @@ import type { User } from "@/services/types";
 import { Avatar } from "@/components/Avatar";
 
 const useStyles = makeStyles({
-  content: { display: "flex", flexDirection: "column", gap: tokens.spacingVerticalM, minHeight: "360px" },
+  content: {
+    display: "flex",
+    flexDirection: "column",
+    gap: tokens.spacingVerticalM,
+    minHeight: "360px",
+  },
   list: {
     display: "flex",
     flexDirection: "column",
@@ -48,10 +53,14 @@ const useStyles = makeStyles({
   name: { fontWeight: tokens.fontWeightSemibold },
   handle: { fontSize: tokens.fontSizeBase200, color: tokens.colorNeutralForeground3 },
   selectedRow: {
-    display: "flex", flexWrap: "wrap", gap: tokens.spacingHorizontalXS,
+    display: "flex",
+    flexWrap: "wrap",
+    gap: tokens.spacingHorizontalXS,
   },
   chip: {
-    display: "inline-flex", alignItems: "center", gap: "4px",
+    display: "inline-flex",
+    alignItems: "center",
+    gap: "4px",
     padding: `2px ${tokens.spacingHorizontalS}`,
     borderRadius: tokens.borderRadiusCircular,
     backgroundColor: tokens.colorBrandBackground2,
@@ -86,7 +95,9 @@ export function NewConversationDialog({ open, onOpenChange, onCreated }: Props) 
         setLoading(false);
       }
     });
-    return () => { cancelled = true; };
+    return () => {
+      cancelled = true;
+    };
   }, [q, open]);
 
   useEffect(() => {
@@ -129,15 +140,26 @@ export function NewConversationDialog({ open, onOpenChange, onCreated }: Props) 
 
   return (
     <Dialog open={open} onOpenChange={(_, d) => onOpenChange(d.open)}>
-      <DialogSurface>
+      <DialogSurface data-testid="new-conversation-dialog">
         <DialogBody>
           <DialogTitle>New conversation</DialogTitle>
           <DialogContent>
             <div className={s.content}>
-              <Switch checked={isGroup} onChange={(_, d) => { setIsGroup(d.checked); setSelected([]); }} label="Create a group" />
+              <Switch
+                checked={isGroup}
+                onChange={(_, d) => {
+                  setIsGroup(d.checked);
+                  setSelected([]);
+                }}
+                label="Create a group"
+              />
               {isGroup ? (
                 <Field label="Group name" required>
-                  <Input value={groupName} onChange={(_, d) => setGroupName(d.value)} placeholder="Design Guild" />
+                  <Input
+                    value={groupName}
+                    onChange={(_, d) => setGroupName(d.value)}
+                    placeholder="Design Guild"
+                  />
                 </Field>
               ) : null}
               <Field label={isGroup ? "Add members" : "Find someone"}>
@@ -157,8 +179,15 @@ export function NewConversationDialog({ open, onOpenChange, onCreated }: Props) 
                       <button
                         aria-label={`Remove ${u.displayName}`}
                         onClick={() => toggle(u)}
-                        style={{ background: "transparent", border: "none", cursor: "pointer", color: "inherit" }}
-                      >×</button>
+                        style={{
+                          background: "transparent",
+                          border: "none",
+                          cursor: "pointer",
+                          color: "inherit",
+                        }}
+                      >
+                        ×
+                      </button>
                     </span>
                   ))}
                 </div>
@@ -169,15 +198,33 @@ export function NewConversationDialog({ open, onOpenChange, onCreated }: Props) 
                     <Spinner size="tiny" label="Searching…" />
                   </div>
                 ) : users.length === 0 ? (
-                  <div style={{ padding: 24, textAlign: "center", color: tokens.colorNeutralForeground3 }}>
+                  <div
+                    style={{
+                      padding: 24,
+                      textAlign: "center",
+                      color: tokens.colorNeutralForeground3,
+                    }}
+                  >
                     <Text>No people match "{q}".</Text>
                   </div>
                 ) : (
                   users.map((u) => {
                     const active = !!selected.find((x) => x.id === u.id);
                     return (
-                      <button key={u.id} type="button" className={active ? `${s.row} ${s.rowActive}` : s.row} onClick={() => toggle(u)}>
-                        <Avatar name={u.displayName} image={u.avatarUrl} presence={u.presence} showPresence size={32} />
+                      <button
+                        key={u.id}
+                        type="button"
+                        className={active ? `${s.row} ${s.rowActive}` : s.row}
+                        onClick={() => toggle(u)}
+                        aria-label={`Select ${u.displayName}`}
+                      >
+                        <Avatar
+                          name={u.displayName}
+                          image={u.avatarUrl}
+                          presence={u.presence}
+                          showPresence
+                          size={32}
+                        />
                         <div className={s.info}>
                           <span className={s.name}>{u.displayName}</span>
                           <span className={s.handle}>@{u.username}</span>
@@ -191,7 +238,9 @@ export function NewConversationDialog({ open, onOpenChange, onCreated }: Props) 
             </div>
           </DialogContent>
           <DialogActions>
-            <Button appearance="secondary" onClick={() => onOpenChange(false)}>Cancel</Button>
+            <Button appearance="secondary" onClick={() => onOpenChange(false)}>
+              Cancel
+            </Button>
             <Button appearance="primary" disabled={!canSubmit || creating} onClick={create}>
               {creating ? "Creating…" : isGroup ? "Create group" : "Start chat"}
             </Button>

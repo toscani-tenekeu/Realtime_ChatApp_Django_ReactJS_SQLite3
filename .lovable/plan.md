@@ -1,4 +1,3 @@
-
 # Phase 1 — Fluent UI Chat Frontend (Vite + React + TS)
 
 Frontend only. No backend calls, no Firebase/Supabase. All data comes from an in-memory mock behind a typed service layer that you can later swap for your Django API.
@@ -15,6 +14,7 @@ Replace the current TanStack Start scaffold with a plain Vite React SPA:
 ## Phase 1 scope
 
 Screens:
+
 1. Welcome / Landing
 2. Register
 3. Sign in
@@ -24,12 +24,14 @@ Screens:
 7. New Conversation (dialog: search users, DM or group)
 
 Cross-cutting:
+
 - Light/dark theme toggle (persisted to `localStorage`)
 - Responsive from 375px → desktop
 - Loading skeletons, empty states, error states, offline/reconnecting banner, failed-message retry, toasts, confirmation dialogs, disabled/permission-locked controls
 - Accessible names on icon-only buttons, `relationship` on every Tooltip, `Field` wrapper on form controls, keyboard nav + visible focus
 
 Chat features included in Phase 1:
+
 - Send / edit / delete / reply
 - Emoji reactions
 - Text + image + document attachments with preview and upload-progress UI
@@ -135,6 +137,7 @@ Protected routes redirect to `/signin` when `AuthProvider` has no session.
 ## Service layer contract
 
 `services/types.ts` defines:
+
 - `User`, `Presence`, `Conversation` (dm | group), `Message`, `Reaction`, `Attachment`, `MessageStatus` ('sending' | 'sent' | 'delivered' | 'read' | 'failed').
 - Interfaces: `AuthService` (signIn/signUp/signOut/requestReset/resetPassword/getCurrentUser), `ChatService` (listConversations, getMessages(paged), sendMessage(optimistic), editMessage, deleteMessage, react, setTyping, markRead, pin/mute/archive, createConversation), `UserService` (searchUsers, getUser).
 - All methods return `Promise<T>`; mocks add small artificial latency and can simulate failures for testing failed/retry UI.

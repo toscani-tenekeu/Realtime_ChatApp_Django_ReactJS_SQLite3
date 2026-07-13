@@ -1,9 +1,9 @@
-import { MockAuthService } from "@/services/auth/MockAuthService";
-import { MockChatService } from "@/services/chat/MockChatService";
-import { MockUserService } from "@/services/users/MockUserService";
+import { ApiAuthService } from "@/services/auth/ApiAuthService";
+import { ApiChatService } from "@/services/chat/ApiChatService";
+import { ApiUserService } from "@/services/users/ApiUserService";
 
 // Swap these exports with fetch-based implementations of the same interfaces
 // (see `services/types.ts`) when wiring to your Django backend.
-export const authService = new MockAuthService();
-export const chatService = new MockChatService();
-export const userService = new MockUserService();
+export const authService = new ApiAuthService();
+export const chatService = new ApiChatService();
+export const userService = new ApiUserService();

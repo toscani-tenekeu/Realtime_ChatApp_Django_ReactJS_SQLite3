@@ -21,7 +21,14 @@ interface Props {
   color?: "brand" | "colorful" | "neutral";
 }
 
-export function Avatar({ name, image, size = 40, presence, showPresence, color = "colorful" }: Props) {
+export function Avatar({
+  name,
+  image,
+  size = 40,
+  presence,
+  showPresence,
+  color = "colorful",
+}: Props) {
   const styles = useStyles();
   return (
     <span className={styles.wrap}>

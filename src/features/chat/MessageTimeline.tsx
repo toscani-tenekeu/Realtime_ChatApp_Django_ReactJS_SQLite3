@@ -83,7 +83,9 @@ export function MessageTimeline({
     return (
       <div className={s.centered}>
         <div>
-          <Text size={400} weight="semibold">No messages yet</Text>
+          <Text size={400} weight="semibold">
+            No messages yet
+          </Text>
           <div style={{ marginTop: 4 }}>Say hi to start the conversation.</div>
         </div>
       </div>
@@ -91,7 +93,7 @@ export function MessageTimeline({
   }
 
   return (
-    <div className={s.root} ref={scrollRef}>
+    <div className={s.root} ref={scrollRef} data-testid="message-timeline">
       {hasMore ? (
         <div className={s.loadMoreWrap}>
           {loadingMore ? (

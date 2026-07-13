@@ -9,7 +9,10 @@
     "build:dev": "vite build --mode development",
     "preview": "vite preview",
     "lint": "eslint .",
-    "format": "prettier --write ."
+    "format": "prettier --write .",
+    "e2e": "playwright test",
+    "e2e:headed": "playwright test --headed",
+    "e2e:screenshots": "cross-env README_SCREENSHOTS=1 playwright test e2e/readme-screenshots.spec.ts"
   },
   "dependencies": {
     "@fluentui/react-components": "^9.74.3",
@@ -27,6 +30,8 @@
     "@types/react": "^19.2.0",
     "@types/react-dom": "^19.2.0",
     "@vitejs/plugin-react": "^5.2.0",
+    "@playwright/test": "^1.54.2",
+    "cross-env": "^10.0.0",
     "eslint": "^9.32.0",
     "eslint-config-prettier": "^10.1.1",
     "eslint-plugin-prettier": "^5.2.6",

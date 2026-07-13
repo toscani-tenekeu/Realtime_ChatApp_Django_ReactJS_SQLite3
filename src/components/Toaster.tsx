@@ -1,4 +1,11 @@
-import { Toaster, useToastController, useId, Toast, ToastTitle, ToastBody } from "@fluentui/react-components";
+import {
+  Toaster,
+  useToastController,
+  useId,
+  Toast,
+  ToastTitle,
+  ToastBody,
+} from "@fluentui/react-components";
 import { createContext, useCallback, useContext, type ReactNode } from "react";
 
 type Intent = "success" | "error" | "warning" | "info";

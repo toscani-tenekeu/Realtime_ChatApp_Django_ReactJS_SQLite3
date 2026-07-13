@@ -23,29 +23,41 @@ const useStyles = makeStyles({
     },
   },
   brand: {
-    display: "flex", alignItems: "center", gap: tokens.spacingHorizontalS,
+    display: "flex",
+    alignItems: "center",
+    gap: tokens.spacingHorizontalS,
     fontWeight: tokens.fontWeightSemibold,
   },
   brandMark: {
-    width: "28px", height: "28px",
+    width: "28px",
+    height: "28px",
     borderRadius: tokens.borderRadiusMedium,
     background: `linear-gradient(135deg, ${tokens.colorBrandBackground}, ${tokens.colorPaletteBerryBackground2})`,
   },
   quote: { maxWidth: "420px" },
   main: {
-    display: "flex", flexDirection: "column",
+    display: "flex",
+    flexDirection: "column",
     padding: tokens.spacingHorizontalXXL,
   },
   headerRow: {
-    display: "flex", justifyContent: "space-between", alignItems: "center",
+    display: "flex",
+    justifyContent: "space-between",
+    alignItems: "center",
     marginBottom: tokens.spacingVerticalXXL,
   },
   card: {
-    width: "100%", maxWidth: "400px", margin: "auto",
-    display: "flex", flexDirection: "column", gap: tokens.spacingVerticalL,
+    width: "100%",
+    maxWidth: "400px",
+    margin: "auto",
+    display: "flex",
+    flexDirection: "column",
+    gap: tokens.spacingVerticalL,
   },
   mobileBrand: {
-    display: "flex", alignItems: "center", gap: tokens.spacingHorizontalS,
+    display: "flex",
+    alignItems: "center",
+    gap: tokens.spacingHorizontalS,
     fontWeight: tokens.fontWeightSemibold,
     "@media (min-width: 960px)": { display: "none" },
   },
@@ -78,7 +90,11 @@ export function AuthLayout({ title, subtitle, children, quote }: Props) {
       </aside>
       <main className={s.main}>
         <div className={s.headerRow}>
-          <Link to="/" className={s.mobileBrand} style={{ color: "inherit", textDecoration: "none" }}>
+          <Link
+            to="/"
+            className={s.mobileBrand}
+            style={{ color: "inherit", textDecoration: "none" }}
+          >
             <span className={s.brandMark} aria-hidden />
             Pulse
           </Link>
@@ -90,7 +106,9 @@ export function AuthLayout({ title, subtitle, children, quote }: Props) {
           <div>
             <Title2 as="h1">{title}</Title2>
             {subtitle ? (
-              <Body1 style={{ color: tokens.colorNeutralForeground2, marginTop: 4 }}>{subtitle}</Body1>
+              <Body1 style={{ color: tokens.colorNeutralForeground2, marginTop: 4 }}>
+                {subtitle}
+              </Body1>
             ) : null}
           </div>
           {children}

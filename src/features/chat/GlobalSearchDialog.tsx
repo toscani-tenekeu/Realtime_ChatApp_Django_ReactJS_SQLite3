@@ -19,14 +19,25 @@ import { conversationAvatar, conversationTitle, getUser } from "@/features/chat/
 import { formatRelative } from "@/utils/date";
 
 const useStyles = makeStyles({
-  content: { display: "flex", flexDirection: "column", gap: tokens.spacingVerticalM, minHeight: "380px" },
+  content: {
+    display: "flex",
+    flexDirection: "column",
+    gap: tokens.spacingVerticalM,
+    minHeight: "380px",
+  },
   hits: { display: "flex", flexDirection: "column", maxHeight: "420px", overflowY: "auto" },
   row: {
-    display: "flex", alignItems: "flex-start", gap: tokens.spacingHorizontalM,
+    display: "flex",
+    alignItems: "flex-start",
+    gap: tokens.spacingHorizontalM,
     padding: tokens.spacingHorizontalM,
     borderRadius: tokens.borderRadiusMedium,
-    cursor: "pointer", border: "none", background: "transparent",
-    textAlign: "left", color: tokens.colorNeutralForeground1, width: "100%",
+    cursor: "pointer",
+    border: "none",
+    background: "transparent",
+    textAlign: "left",
+    color: tokens.colorNeutralForeground1,
+    width: "100%",
     ":hover": { backgroundColor: tokens.colorNeutralBackground2Hover },
   },
   info: { flex: 1, minWidth: 0, display: "flex", flexDirection: "column", gap: "2px" },
@@ -39,7 +50,11 @@ const useStyles = makeStyles({
     WebkitLineClamp: 2,
     WebkitBoxOrient: "vertical",
   },
-  highlight: { backgroundColor: tokens.colorBrandBackground2, padding: "0 2px", borderRadius: "2px" },
+  highlight: {
+    backgroundColor: tokens.colorBrandBackground2,
+    padding: "0 2px",
+    borderRadius: "2px",
+  },
 });
 
 interface Props {
@@ -76,7 +91,9 @@ export function GlobalSearchDialog({ open, onOpenChange, onNavigate }: Props) {
       setHits(res);
       setLoading(false);
     });
-    return () => { cancelled = true; };
+    return () => {
+      cancelled = true;
+    };
   }, [q, open]);
 
   const convById = useMemo(() => new Map(convs.map((c) => [c.id, c])), [convs]);
@@ -111,28 +128,51 @@ export function GlobalSearchDialog({ open, onOpenChange, onNavigate }: Props) {
               />
               <div className={s.hits}>
                 {loading ? (
-                  <div style={{ padding: tokens.spacingVerticalXL, display: "grid", placeItems: "center" }}>
+                  <div
+                    style={{
+                      padding: tokens.spacingVerticalXL,
+                      display: "grid",
+                      placeItems: "center",
+                    }}
+                  >
                     <Spinner size="tiny" label="Searching…" />
                   </div>
                 ) : !q.trim() ? (
-                  <div style={{ padding: tokens.spacingVerticalXL, textAlign: "center", color: tokens.colorNeutralForeground3 }}>
+                  <div
+                    style={{
+                      padding: tokens.spacingVerticalXL,
+                      textAlign: "center",
+                      color: tokens.colorNeutralForeground3,
+                    }}
+                  >
                     <Text>Type to search messages in every conversation.</Text>
                   </div>
                 ) : hits.length === 0 ? (
-                  <div style={{ padding: tokens.spacingVerticalXL, textAlign: "center", color: tokens.colorNeutralForeground3 }}>
+                  <div
+                    style={{
+                      padding: tokens.spacingVerticalXL,
+                      textAlign: "center",
+                      color: tokens.colorNeutralForeground3,
+                    }}
+                  >
                     <Text>No messages match "{q}".</Text>
                   </div>
                 ) : (
                   hits.map((h) => {
                     const conv = convById.get(h.conversationId);
-                    const avatar = conv ? conversationAvatar(conv) : { name: "?", image: undefined };
+                    const avatar = conv
+                      ? conversationAvatar(conv)
+                      : { name: "?", image: undefined };
                     const author = getUser(h.message.authorId);
                     return (
                       <button
                         key={h.message.id}
                         type="button"
                         className={s.row}
-                        onClick={() => { onNavigate(h.conversationId); onOpenChange(false); }}
+                        onClick={() => {
+                          onNavigate(h.conversationId);
+                          onOpenChange(false);
+                        }}
                       >
                         <Avatar name={avatar.name} image={avatar.image} size={36} />
                         <div className={s.info}>
