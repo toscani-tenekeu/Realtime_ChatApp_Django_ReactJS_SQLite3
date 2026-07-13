@@ -70,6 +70,17 @@ The current SQLite database and in-memory Channels layer are suitable for local 
 
 The composer also includes a microphone button for voice messages. Grant microphone permission, stop the recording, and send it like any other attachment. Audio is stored by Django and rendered with native browser playback controls.
 
+For LAN testing of microphone, camera, and voice recording, use an HTTPS origin. Generate a short-lived certificate with a trusted local certificate tool (or the OpenSSL certificate used by this workspace), then run Uvicorn and Vite with the certificate paths:
+
+```powershell
+$env:VITE_API_URL="https://192.168.1.168:8000/api"
+$env:VITE_HTTPS_CERT="$pwd\dev-certs\lan-cert.pem"
+$env:VITE_HTTPS_KEY="$pwd\dev-certs\lan-key.pem"
+python -m uvicorn realtime_chatapp.asgi:application --host 0.0.0.0 --port 8000 --ssl-keyfile "$pwd\dev-certs\lan-key.pem" --ssl-certfile "$pwd\dev-certs\lan-cert.pem"
+```
+
+Open `https://192.168.1.168:4173/` and accept the local certificate warning for the frontend and backend once. Plain HTTP works for chat, but Firefox only exposes microphone/camera APIs on HTTPS or `localhost`.
+
 ## Production-like local run
 
 This runs a production frontend build and the Django ASGI server without Vite HMR. It is useful for LAN/ngrok smoke tests; SQLite and the in-memory Channels layer are still intended for single-process demos, not a multi-instance deployment.

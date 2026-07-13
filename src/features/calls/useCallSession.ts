@@ -30,6 +30,17 @@ const rtcConfig: RTCConfiguration = {
     : []) as RTCIceServer[],
 };
 
+function newCallId() {
+  if (typeof crypto !== "undefined" && typeof crypto.randomUUID === "function") {
+    return `call_${crypto.randomUUID()}`;
+  }
+  if (typeof crypto !== "undefined" && typeof crypto.getRandomValues === "function") {
+    const bytes = crypto.getRandomValues(new Uint8Array(16));
+    return `call_${Array.from(bytes, (byte) => byte.toString(16).padStart(2, "0")).join("")}`;
+  }
+  return `call_${Date.now()}_${Math.random().toString(36).slice(2)}`;
+}
+
 function callError(error: unknown) {
   if (error instanceof DOMException && error.name === "NotAllowedError") {
     return "Camera or microphone permission was denied.";
@@ -145,7 +156,7 @@ export function useCallSession(userId: ID | undefined) {
       if (!userId || conversation.kind !== "dm" || callRef.current) return;
       const remoteId = conversation.memberIds.find((id) => id !== userId && id !== "u_me");
       if (!remoteId) return;
-      const id = `call_${crypto.randomUUID()}`;
+      const id = newCallId();
       const active: CallState = {
         id,
         kind,

@@ -1,6 +1,14 @@
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
+import fs from "node:fs";
 import path from "node:path";
+
+const httpsCert = process.env.VITE_HTTPS_CERT;
+const httpsKey = process.env.VITE_HTTPS_KEY;
+const https =
+  httpsCert && httpsKey
+    ? { cert: fs.readFileSync(httpsCert), key: fs.readFileSync(httpsKey) }
+    : undefined;
 
 export default defineConfig({
   plugins: [react()],
@@ -13,6 +21,7 @@ export default defineConfig({
     host: "::",
     port: 8080,
     strictPort: true,
+    ...(https ? { https } : {}),
     // Keep Vite's host protection enabled; add temporary tunnel domains via
     // VITE_ALLOWED_HOSTS instead of disabling the check globally.
     allowedHosts: (process.env.VITE_ALLOWED_HOSTS ?? "")
