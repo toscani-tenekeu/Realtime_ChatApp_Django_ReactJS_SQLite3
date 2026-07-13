@@ -8,6 +8,8 @@ import {
   Speaker2Regular,
   ArchiveRegular,
   ArchiveArrowBackRegular,
+  InfoRegular,
+  SearchRegular,
 } from "@fluentui/react-icons";
 import type { Conversation } from "@/services/types";
 import { Avatar } from "@/components/Avatar";
@@ -24,7 +26,7 @@ const useStyles = makeStyles({
     backgroundColor: tokens.colorNeutralBackground1,
     minHeight: "60px",
   },
-  info: { flex: 1, minWidth: 0, display: "flex", flexDirection: "column" },
+  info: { flex: 1, minWidth: 0, display: "flex", flexDirection: "column", cursor: "pointer" },
   title: { fontWeight: tokens.fontWeightSemibold, fontSize: tokens.fontSizeBase400 },
   subtitle: { fontSize: tokens.fontSizeBase200, color: tokens.colorNeutralForeground3 },
 });
@@ -32,9 +34,11 @@ const useStyles = makeStyles({
 interface Props {
   conversation: Conversation;
   onBack?: () => void;
+  onOpenDetails: () => void;
+  onOpenSearch: () => void;
 }
 
-export function ChatHeader({ conversation, onBack }: Props) {
+export function ChatHeader({ conversation, onBack, onOpenDetails, onOpenSearch }: Props) {
   const s = useStyles();
   const avatar = conversationAvatar(conversation);
   return (
@@ -45,10 +49,16 @@ export function ChatHeader({ conversation, onBack }: Props) {
         </Tooltip>
       ) : null}
       <Avatar name={avatar.name} image={avatar.image} presence={avatar.presence} showPresence={conversation.kind === "dm"} size={36} />
-      <div className={s.info}>
+      <button className={s.info} onClick={onOpenDetails} aria-label="View conversation details" style={{ background: "transparent", border: "none", textAlign: "left" }}>
         <Text className={s.title} truncate wrap={false}>{conversationTitle(conversation)}</Text>
         <Text className={s.subtitle} truncate wrap={false}>{conversationSubtitle(conversation)}</Text>
-      </div>
+      </button>
+      <Tooltip content="Search messages" relationship="label">
+        <Button aria-label="Search messages" appearance="subtle" icon={<SearchRegular />} onClick={onOpenSearch} />
+      </Tooltip>
+      <Tooltip content="Details" relationship="label">
+        <Button aria-label="Conversation details" appearance="subtle" icon={<InfoRegular />} onClick={onOpenDetails} />
+      </Tooltip>
       <Menu>
         <MenuTrigger disableButtonEnhancement>
           <Tooltip content="Conversation options" relationship="label">
