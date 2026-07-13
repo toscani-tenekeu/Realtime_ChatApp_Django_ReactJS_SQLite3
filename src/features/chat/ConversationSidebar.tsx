@@ -75,10 +75,11 @@ interface Props {
   loading: boolean;
   onSelect: (id: string) => void;
   onNew: () => void;
+  onSearch: () => void;
   onClose?: () => void; // mobile drawer close
 }
 
-export function ConversationSidebar({ conversations, activeId, loading, onSelect, onNew, onClose }: Props) {
+export function ConversationSidebar({ conversations, activeId, loading, onSelect, onNew, onSearch, onClose }: Props) {
   const s = useStyles();
   const [q, setQ] = useState("");
 
@@ -101,6 +102,9 @@ export function ConversationSidebar({ conversations, activeId, loading, onSelect
         <div className={s.titleRow}>
           <div className={s.title}>Chats</div>
           <div style={{ display: "flex", gap: 4 }}>
+            <Tooltip content="Search all messages (⌘K)" relationship="label">
+              <Button aria-label="Search all messages" appearance="subtle" icon={<GlobeSearchRegular />} onClick={onSearch} />
+            </Tooltip>
             <Tooltip content="New conversation" relationship="label">
               <Button aria-label="New conversation" appearance="subtle" icon={<EditRegular />} onClick={onNew} />
             </Tooltip>
