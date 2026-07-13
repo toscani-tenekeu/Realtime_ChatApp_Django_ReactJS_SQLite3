@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import {
   Button,
   Textarea,
@@ -18,6 +18,8 @@ import {
   ImageRegular,
   DocumentRegular,
   ArrowReplyRegular,
+  MicRegular,
+  RecordStopRegular,
 } from "@fluentui/react-icons";
 import type { Attachment, Message } from "@/services/types";
 import { getUser } from "@/features/chat/helpers";
@@ -102,6 +104,21 @@ const useStyles = makeStyles({
     borderRadius: tokens.borderRadiusMedium,
     ":hover": { backgroundColor: tokens.colorNeutralBackground3Hover },
   },
+  recordingBar: {
+    display: "flex",
+    alignItems: "center",
+    gap: tokens.spacingHorizontalS,
+    padding: `${tokens.spacingVerticalXS} ${tokens.spacingHorizontalS}`,
+    borderRadius: tokens.borderRadiusMedium,
+    backgroundColor: tokens.colorPaletteRedBackground2,
+    color: tokens.colorPaletteRedForeground1,
+  },
+  recordingDot: {
+    width: "8px",
+    height: "8px",
+    borderRadius: tokens.borderRadiusCircular,
+    backgroundColor: tokens.colorPaletteRedForeground1,
+  },
 });
 
 interface Pending extends Attachment {
@@ -121,9 +138,103 @@ export function Composer({ onSend, replyTo, onClearReply, disabled, placeholder 
   const s = useStyles();
   const [text, setText] = useState("");
   const [pending, setPending] = useState<Pending[]>([]);
+  const [recording, setRecording] = useState(false);
+  const [recordingSeconds, setRecordingSeconds] = useState(0);
   const fileInput = useRef<HTMLInputElement>(null);
+  const recorderRef = useRef<MediaRecorder | null>(null);
+  const recordingStreamRef = useRef<MediaStream | null>(null);
+  const recordingChunksRef = useRef<Blob[]>([]);
+  const recordingTimerRef = useRef<number | null>(null);
+
+  function formatRecordingTime(seconds: number) {
+    return `${Math.floor(seconds / 60)}:${String(seconds % 60).padStart(2, "0")}`;
+  }
+
+  function clearRecordingTimer() {
+    if (recordingTimerRef.current !== null) {
+      window.clearInterval(recordingTimerRef.current);
+      recordingTimerRef.current = null;
+    }
+  }
+
+  function queueRecording(file: File) {
+    setPending((prev) => [
+      ...prev,
+      {
+        id: `att_${Math.random().toString(36).slice(2)}`,
+        kind: "audio",
+        name: file.name,
+        url: URL.createObjectURL(file),
+        sizeBytes: file.size,
+        mime: file.type || "audio/webm",
+        progress: 100,
+      },
+    ]);
+  }
+
+  async function startRecording() {
+    if (disabled || recording) return;
+    if (!navigator.mediaDevices?.getUserMedia || typeof MediaRecorder === "undefined") {
+      window.alert("Audio recording is not supported by this browser.");
+      return;
+    }
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      const mimeType = ["audio/webm;codecs=opus", "audio/webm", "audio/mp4"].find((type) =>
+        MediaRecorder.isTypeSupported(type),
+      );
+      const recorder = new MediaRecorder(stream, mimeType ? { mimeType } : undefined);
+      recordingStreamRef.current = stream;
+      recordingChunksRef.current = [];
+      recorderRef.current = recorder;
+      recorder.ondataavailable = (event) => {
+        if (event.data.size > 0) recordingChunksRef.current.push(event.data);
+      };
+      recorder.onstop = () => {
+        const type = recorder.mimeType || mimeType || "audio/webm";
+        const blob = new Blob(recordingChunksRef.current, { type });
+        const extension = type.includes("mp4") ? "m4a" : "webm";
+        if (blob.size > 0)
+          queueRecording(new File([blob], `voice-message-${Date.now()}.${extension}`, { type }));
+        recordingChunksRef.current = [];
+      };
+      recorder.start();
+      setRecording(true);
+      setRecordingSeconds(0);
+      recordingTimerRef.current = window.setInterval(
+        () => setRecordingSeconds((value) => value + 1),
+        1000,
+      );
+    } catch {
+      window.alert("Microphone permission is required to record a voice message.");
+    }
+  }
+
+  function stopRecording() {
+    recorderRef.current?.stop();
+    recordingStreamRef.current?.getTracks().forEach((track) => track.stop());
+    recorderRef.current = null;
+    recordingStreamRef.current = null;
+    clearRecordingTimer();
+    setRecording(false);
+  }
+
+  const cancelRecording = useCallback(() => {
+    const recorder = recorderRef.current;
+    if (recorder) recorder.onstop = null;
+    recorder?.stop();
+    recordingStreamRef.current?.getTracks().forEach((track) => track.stop());
+    recorderRef.current = null;
+    recordingStreamRef.current = null;
+    recordingChunksRef.current = [];
+    clearRecordingTimer();
+    setRecording(false);
+  }, []);
+
+  useEffect(() => cancelRecording, [cancelRecording]);
 
   function submit() {
+    if (recording) return;
     const body = text.trim();
     if (!body && pending.length === 0) return;
     if (pending.some((p) => p.progress < 100 && !p.failed)) return;
@@ -230,6 +341,23 @@ export function Composer({ onSend, replyTo, onClearReply, disabled, placeholder 
         </div>
       ) : null}
 
+      {recording ? (
+        <div className={s.recordingBar} role="status" aria-live="polite">
+          <span className={s.recordingDot} />
+          <span>Recording {formatRecordingTime(recordingSeconds)}</span>
+          <Button
+            aria-label="Stop recording"
+            appearance="subtle"
+            size="small"
+            icon={<RecordStopRegular />}
+            onClick={stopRecording}
+          />
+          <Button size="small" appearance="transparent" onClick={cancelRecording}>
+            Cancel
+          </Button>
+        </div>
+      ) : null}
+
       <div className={s.row}>
         <input
           ref={fileInput}
@@ -248,6 +376,15 @@ export function Composer({ onSend, replyTo, onClearReply, disabled, placeholder 
             icon={<AttachRegular />}
             onClick={() => fileInput.current?.click()}
             disabled={disabled}
+          />
+        </Tooltip>
+        <Tooltip content="Record voice message" relationship="label">
+          <Button
+            aria-label="Record voice message"
+            appearance="subtle"
+            icon={<MicRegular />}
+            onClick={() => void startRecording()}
+            disabled={disabled || recording}
           />
         </Tooltip>
         <Popover>

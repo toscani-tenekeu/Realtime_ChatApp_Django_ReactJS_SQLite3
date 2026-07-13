@@ -39,6 +39,7 @@ test("direct-message header exposes audio and video call controls", async ({ pag
 
   await expect(page.getByRole("button", { name: "Start audio call" })).toBeVisible();
   await expect(page.getByRole("button", { name: "Start video call" })).toBeVisible();
+  await expect(page.getByRole("button", { name: "Record voice message" })).toBeVisible();
   await expect(page.getByRole("button", { name: "Start audio call" })).toHaveAttribute(
     "aria-label",
     "Start audio call",

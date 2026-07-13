@@ -32,6 +32,7 @@ Download the editable project overview deck: [Realtime_ChatApp_Django_ReactJS_SQ
 - Direct messages and group conversations
 - Replies, reactions, forwarding, typing events, and read state
 - One-to-one audio and video calls with WebRTC (ring, accept/decline, mute, camera toggle, and hang up)
+- Voice messages recorded in the browser and sent as playable audio attachments
 - Profile, password reset, blocked users, and user settings
 - Deterministic demo seed for local demos and E2E runs
 
@@ -66,6 +67,8 @@ $env:VITE_RTC_ICE_SERVERS='[{"urls":"stun:stun.l.google.com:19302"}]'
 ```
 
 The current SQLite database and in-memory Channels layer are suitable for local or single-process demos. A production deployment should use Redis for the channel layer and a TURN service for reliable media connectivity across restrictive networks.
+
+The composer also includes a microphone button for voice messages. Grant microphone permission, stop the recording, and send it like any other attachment. Audio is stored by Django and rendered with native browser playback controls.
 
 ## Production-like local run
 

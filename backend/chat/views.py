@@ -264,8 +264,10 @@ def typing(request, pk):
 def upload(request):
     file=request.FILES.get("file")
     if not file: return error("Choose a file.")
-    item=Attachment.objects.create(file=file, uploaded_by=request.user, kind="image" if file.content_type.startswith("image/") else "document",
-                                   name=file.name, size_bytes=file.size, mime=file.content_type)
+    content_type = file.content_type or "application/octet-stream"
+    kind = "image" if content_type.startswith("image/") else "audio" if content_type.startswith("audio/") else "document"
+    item=Attachment.objects.create(file=file, uploaded_by=request.user, kind=kind,
+                                   name=file.name, size_bytes=file.size, mime=content_type)
     return Response(attachment_data(item, request), status=201)
 
 @api_view(["GET"])
