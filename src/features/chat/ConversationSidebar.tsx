@@ -1,5 +1,5 @@
 import { Badge, Input, makeStyles, tokens, Text, Button, Tooltip } from "@fluentui/react-components";
-import { SearchRegular, EditRegular, DismissRegular } from "@fluentui/react-icons";
+import { SearchRegular, EditRegular, DismissRegular, GlobeSearchRegular } from "@fluentui/react-icons";
 import { useMemo, useState } from "react";
 import type { Conversation } from "@/services/types";
 import { Avatar } from "@/components/Avatar";
