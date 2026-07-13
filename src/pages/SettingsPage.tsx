@@ -56,7 +56,10 @@ const useStyles = makeStyles({
   },
   toggleText: { display: "flex", flexDirection: "column" },
   danger: {
-    borderColor: tokens.colorPaletteRedBorder2,
+    borderTopColor: tokens.colorPaletteRedBorder2,
+    borderRightColor: tokens.colorPaletteRedBorder2,
+    borderBottomColor: tokens.colorPaletteRedBorder2,
+    borderLeftColor: tokens.colorPaletteRedBorder2,
   },
   blockedRow: {
     display: "flex", alignItems: "center", gap: tokens.spacingHorizontalM,
