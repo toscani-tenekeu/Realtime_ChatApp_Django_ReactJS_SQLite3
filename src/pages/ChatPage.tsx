@@ -92,6 +92,7 @@ const useStyles = makeStyles({
     alignItems: "center",
     gap: tokens.spacingHorizontalS,
     fontWeight: tokens.fontWeightSemibold,
+    color: tokens.colorNeutralForeground1,
   },
   brandMark: {
     width: "24px",
