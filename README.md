@@ -84,7 +84,7 @@ Run `python backend/seed_demo.py --reset` to recreate all demo data. The script 
 
 | User         | Email             | Username | Password         |
 | ------------ | ----------------- | -------- | ---------------- |
-| Toscani (admin) | `admin@example.com` | `toscani` | `user1234` |
+| Toscani (admin) | `admin@example.com` | `toscani` | `admin123` |
 | Ada Lovelace | `ada@example.com`   | `ada`    | `user1234` |
 | Linus Wren   | `linus@example.com` | `linus`  | `user1234` |
 | Mia Okafor   | `mia@example.com`   | `mia`    | `user1234` |
@@ -92,7 +92,7 @@ Run `python backend/seed_demo.py --reset` to recreate all demo data. The script 
 | Priya Menon  | `priya@example.com` | `priya`  | `user1234` |
 | Kai Berg     | `kai@example.com`   | `kai`    | `user1234` |
 
-The Toscani account is the local Django administrator (`is_staff` and `is_superuser`) and can access `http://127.0.0.1:8000/admin/`. All demo users use the shared `user1234` password.
+The Toscani account is the local Django administrator (`is_staff` and `is_superuser`) and can access `http://127.0.0.1:8000/admin/`. Toscani uses `admin123`; all other demo users use the shared `user1234` password.
 
 ## Test commands
 
