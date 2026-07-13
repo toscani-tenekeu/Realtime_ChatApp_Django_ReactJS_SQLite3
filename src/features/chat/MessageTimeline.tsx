@@ -125,6 +125,7 @@ export function MessageTimeline({
               onReply={onReply}
               onRetry={onRetry}
               onDiscard={onDiscard}
+              onForward={onForward}
             />
           </div>
         );
