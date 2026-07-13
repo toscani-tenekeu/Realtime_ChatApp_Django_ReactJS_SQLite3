@@ -1,9 +1,9 @@
 import type { AuthService, Session, User, UserSettings } from "@/services/types";
 import { seedUsers } from "@/mocks/seed";
 
-const STORAGE_KEY = "pulse_session_v1";
-const SETTINGS_KEY = "pulse_settings_v1";
-const BLOCKED_KEY = "pulse_blocked_v1";
+const STORAGE_KEY = "realtime_chatapp_session_v1";
+const SETTINGS_KEY = "realtime_chatapp_settings_v1";
+const BLOCKED_KEY = "realtime_chatapp_blocked_v1";
 
 const DEFAULT_SETTINGS: UserSettings = {
   theme: "system",

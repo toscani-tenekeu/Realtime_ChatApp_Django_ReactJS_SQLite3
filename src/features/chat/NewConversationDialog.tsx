@@ -84,6 +84,7 @@ export function NewConversationDialog({ open, onOpenChange, onCreated }: Props) 
   const [isGroup, setIsGroup] = useState(false);
   const [groupName, setGroupName] = useState("");
   const [creating, setCreating] = useState(false);
+  const [error, setError] = useState("");
 
   useEffect(() => {
     if (!open) return;
@@ -106,6 +107,7 @@ export function NewConversationDialog({ open, onOpenChange, onCreated }: Props) 
       setGroupName("");
       setIsGroup(false);
       setQ("");
+      setError("");
     }
   }, [open]);
 
@@ -123,6 +125,7 @@ export function NewConversationDialog({ open, onOpenChange, onCreated }: Props) 
     if (selected.length === 0) return;
     if (isGroup && !groupName.trim()) return;
     setCreating(true);
+    setError("");
     try {
       const conv = await chatService.createConversation({
         memberIds: selected.map((s) => s.id),
@@ -131,6 +134,8 @@ export function NewConversationDialog({ open, onOpenChange, onCreated }: Props) 
       });
       onCreated(conv.id);
       onOpenChange(false);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Unable to start the conversation.");
     } finally {
       setCreating(false);
     }
@@ -191,6 +196,11 @@ export function NewConversationDialog({ open, onOpenChange, onCreated }: Props) 
                     </span>
                   ))}
                 </div>
+              ) : null}
+              {error ? (
+                <Text role="alert" style={{ color: tokens.colorPaletteRedForeground1 }}>
+                  {error}
+                </Text>
               ) : null}
               <div className={s.list}>
                 {loading ? (

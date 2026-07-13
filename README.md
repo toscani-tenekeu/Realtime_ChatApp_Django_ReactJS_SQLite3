@@ -14,6 +14,10 @@ Repository: [toscani-tenekeu/Realtime_ChatApp_Django_ReactJS_SQLite3](https://gi
 
 ![New conversation dialog](docs/screenshots/new-conversation.png)
 
+## Project presentation
+
+Download the editable project overview deck: [Realtime_ChatApp_Django_ReactJS_SQLite3_Project_Overview.pptx](outputs/Realtime_ChatApp_Django_ReactJS_SQLite3_Project_Overview.pptx).
+
 ## Stack
 
 - React 19 + Vite + Fluent UI
@@ -50,19 +54,45 @@ Open `http://127.0.0.1:4173/`. The backend API is available at `http://127.0.0.1
 
 Set `VITE_API_URL` when the backend is hosted elsewhere. Local backend CORS now accepts both `4173` and `4174`, so the app works in normal development and Playwright E2E mode.
 
+## Production-like local run
+
+This runs a production frontend build and the Django ASGI server without Vite HMR. It is useful for LAN/ngrok smoke tests; SQLite and the in-memory Channels layer are still intended for single-process demos, not a multi-instance deployment.
+
+Terminal 1 (backend):
+
+```powershell
+$env:DJANGO_DEBUG="0"
+$env:DJANGO_SECRET_KEY="replace-with-a-long-random-secret"
+$env:DJANGO_ALLOWED_HOSTS="localhost,127.0.0.1,192.168.1.168"
+$env:FRONTEND_URLS="http://127.0.0.1:4173,http://192.168.1.168:4173"
+cd backend
+python manage.py migrate --noinput
+python manage.py collectstatic --noinput
+daphne -b 0.0.0.0 -p 8000 realtime_chatapp.asgi:application
+```
+
+Terminal 2 (frontend):
+
+```powershell
+$env:VITE_API_URL="http://192.168.1.168:8000/api"
+npm run start:prod
+```
+
 ## Demo accounts
 
 Run `python backend/seed_demo.py --reset` to recreate all demo data. The script is idempotent and also runs automatically before the E2E suite.
 
 | User         | Email             | Username | Password         |
 | ------------ | ----------------- | -------- | ---------------- |
-| You          | `you@pulse.app`   | `you`    | `PulseDemo!2026` |
-| Ada Lovelace | `ada@pulse.app`   | `ada`    | `PulseDemo!2026` |
-| Linus Wren   | `linus@pulse.app` | `linus`  | `PulseDemo!2026` |
-| Mia Okafor   | `mia@pulse.app`   | `mia`    | `PulseDemo!2026` |
-| Renji Sato   | `renji@pulse.app` | `renji`  | `PulseDemo!2026` |
-| Priya Menon  | `priya@pulse.app` | `priya`  | `PulseDemo!2026` |
-| Kai Berg     | `kai@pulse.app`   | `kai`    | `PulseDemo!2026` |
+| Toscani (admin) | `admin@example.com` | `toscani` | `user1234` |
+| Ada Lovelace | `ada@example.com`   | `ada`    | `user1234` |
+| Linus Wren   | `linus@example.com` | `linus`  | `user1234` |
+| Mia Okafor   | `mia@example.com`   | `mia`    | `user1234` |
+| Renji Sato   | `renji@example.com` | `renji`  | `user1234` |
+| Priya Menon  | `priya@example.com` | `priya`  | `user1234` |
+| Kai Berg     | `kai@example.com`   | `kai`    | `user1234` |
+
+The Toscani account is the local Django administrator (`is_staff` and `is_superuser`) and can access `http://127.0.0.1:8000/admin/`. All demo users use the shared `user1234` password.
 
 ## Test commands
 

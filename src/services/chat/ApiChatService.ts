@@ -47,7 +47,9 @@ export class ApiChatService implements ChatService {
   async listConversations() {
     const items = (await api<Conversation[]>("/conversations/")).map(normalizeConversation);
     const ids = [...new Set(items.flatMap((c) => c.memberIds).filter((id) => id !== "u_me"))];
-    const users = await Promise.all(ids.map((id) => api<User>(`/users/${id}/`).catch(() => null)));
+    const users = await Promise.all(
+      ids.map((id) => api<User>(`/users/${toApiId(id)}/`).catch(() => null)),
+    );
     rememberUsers(users.filter((user): user is User => user !== null));
     return items;
   }

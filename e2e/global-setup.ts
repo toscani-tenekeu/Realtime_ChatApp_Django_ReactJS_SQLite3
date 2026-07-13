@@ -10,7 +10,7 @@ export default async function globalSetup() {
     stdio: "inherit",
     env: { ...process.env, VITE_API_URL: "http://127.0.0.1:8001/api" },
   });
-  execFileSync("python", ["backend/seed_demo.py", "--reset"], {
+  execFileSync(process.env.PYTHON_BIN ?? "python", ["backend/seed_demo.py", "--reset"], {
     cwd: rootDir,
     stdio: "inherit",
   });

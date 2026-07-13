@@ -102,7 +102,7 @@ def reset_request(request):
         uid = urlsafe_base64_encode(force_bytes(user.pk))
         token = default_token_generator.make_token(user)
         link = f"{settings.FRONTEND_URL}/reset-password?token={uid}:{token}"
-        send_mail("Reset your Pulse password", f"Use this link to reset your password:\n\n{link}",
+        send_mail("Reset your Realtime ChatApp password", f"Use this link to reset your password:\n\n{link}",
                   settings.DEFAULT_FROM_EMAIL, [user.email])
     return Response({"detail": "If that account exists, reset instructions have been prepared."})
 

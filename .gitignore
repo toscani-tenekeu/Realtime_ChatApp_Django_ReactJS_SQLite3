@@ -22,6 +22,7 @@ test-results/
 # Django development artifacts
 backend/db.sqlite3
 backend/media/
+backend/staticfiles/
 **/__pycache__/
 *.py[cod]
 
