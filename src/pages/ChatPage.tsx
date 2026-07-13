@@ -241,7 +241,7 @@ export default function ChatPage() {
             onClick={() => setDrawerOpen(true)}
           />
           <div className={s.brand}>
-            <span className={s.brandMark} /> Pulse
+            <span className={s.brandMark} /> Realtime ChatApp
           </div>
           <div style={{ marginLeft: "auto", display: "flex", gap: 4 }}>
             <Tooltip content="Search" relationship="label">
