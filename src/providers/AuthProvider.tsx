@@ -1,4 +1,4 @@
-import { createContext, useContext, useEffect, useState, type ReactNode } from "react";
+import { createContext, useCallback, useContext, useEffect, useState, type ReactNode } from "react";
 import { authService } from "@/services";
 import type { User } from "@/services/types";
 
@@ -8,6 +8,8 @@ interface Ctx {
   signIn: (input: { identifier: string; password: string; remember: boolean }) => Promise<void>;
   signUp: (input: { displayName: string; username: string; email: string; password: string }) => Promise<void>;
   signOut: () => Promise<void>;
+  updateProfile: (patch: Partial<Pick<User, "displayName" | "username" | "bio" | "avatarUrl">>) => Promise<void>;
+  refresh: () => Promise<void>;
 }
 
 const AuthCtx = createContext<Ctx | null>(null);
@@ -23,11 +25,17 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     });
   }, []);
 
+  const refresh = useCallback(async () => {
+    const u = await authService.getCurrentUser();
+    setUser(u);
+  }, []);
+
   return (
     <AuthCtx.Provider
       value={{
         user,
         loading,
+        refresh,
         async signIn(input) {
           const s = await authService.signIn(input);
           setUser(s.user);
@@ -39,6 +47,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         async signOut() {
           await authService.signOut();
           setUser(null);
+        },
+        async updateProfile(patch) {
+          const u = await authService.updateProfile(patch);
+          setUser(u);
         },
       }}
     >

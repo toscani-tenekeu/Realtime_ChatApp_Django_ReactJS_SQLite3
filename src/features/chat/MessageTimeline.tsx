@@ -49,6 +49,7 @@ interface Props {
   onReply: (m: Message) => void;
   onRetry: (id: string) => void;
   onDiscard: (id: string) => void;
+  onForward: (m: Message) => void;
   typingUserIds: string[];
 }
 
@@ -61,6 +62,7 @@ export function MessageTimeline({
   onReply,
   onRetry,
   onDiscard,
+  onForward,
   typingUserIds,
 }: Props) {
   const s = useStyles();
@@ -123,6 +125,7 @@ export function MessageTimeline({
               onReply={onReply}
               onRetry={onRetry}
               onDiscard={onDiscard}
+              onForward={onForward}
             />
           </div>
         );

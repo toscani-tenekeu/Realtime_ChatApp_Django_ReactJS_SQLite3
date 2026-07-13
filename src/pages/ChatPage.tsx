@@ -16,6 +16,9 @@ import {
   NavigationRegular,
   SignOutRegular,
   EditRegular,
+  PersonRegular,
+  SettingsRegular,
+  SearchRegular,
 } from "@fluentui/react-icons";
 import { useEffect, useMemo, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
@@ -27,6 +30,9 @@ import { ChatHeader } from "@/features/chat/ChatHeader";
 import { MessageTimeline } from "@/features/chat/MessageTimeline";
 import { Composer } from "@/features/chat/Composer";
 import { NewConversationDialog } from "@/features/chat/NewConversationDialog";
+import { ConversationDetailsDrawer } from "@/features/chat/ConversationDetailsDrawer";
+import { ForwardMessageDialog } from "@/features/chat/ForwardMessageDialog";
+import { GlobalSearchDialog } from "@/features/chat/GlobalSearchDialog";
 import { useConversations } from "@/hooks/useConversations";
 import { useMessages } from "@/hooks/useMessages";
 import { useMediaQuery } from "@/hooks/useMediaQuery";
@@ -102,6 +108,9 @@ export default function ChatPage() {
   const { conversations, loading: convLoading } = useConversations();
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [newOpen, setNewOpen] = useState(false);
+  const [detailsOpen, setDetailsOpen] = useState(false);
+  const [searchOpen, setSearchOpen] = useState(false);
+  const [forwardMsg, setForwardMsg] = useState<Message | null>(null);
   const [replyTo, setReplyTo] = useState<Message | null>(null);
 
   const activeId = params.conversationId;
@@ -113,7 +122,20 @@ export default function ChatPage() {
   useEffect(() => {
     if (activeId) chatService.markRead(activeId);
     setReplyTo(null);
+    setDetailsOpen(false);
   }, [activeId]);
+
+  // ⌘/Ctrl+K opens global search
+  useEffect(() => {
+    function onKey(e: KeyboardEvent) {
+      if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "k") {
+        e.preventDefault();
+        setSearchOpen(true);
+      }
+    }
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, []);
 
   function selectConversation(id: string) {
     navigate(`/chat/${id}`);
@@ -128,6 +150,7 @@ export default function ChatPage() {
         loading={convLoading}
         onSelect={selectConversation}
         onNew={() => setNewOpen(true)}
+        onSearch={() => setSearchOpen(true)}
         onClose={isMobile ? () => setDrawerOpen(false) : undefined}
       />
       {user ? (
@@ -146,6 +169,9 @@ export default function ChatPage() {
             </MenuTrigger>
             <MenuPopover>
               <MenuList>
+                <MenuItem icon={<PersonRegular />} onClick={() => navigate("/profile")}>Profile</MenuItem>
+                <MenuItem icon={<SettingsRegular />} onClick={() => navigate("/settings")}>Settings</MenuItem>
+                <MenuItem icon={<SearchRegular />} onClick={() => setSearchOpen(true)}>Search messages</MenuItem>
                 <MenuItem icon={<SignOutRegular />} onClick={() => { signOut(); navigate("/"); }}>
                   Sign out
                 </MenuItem>
@@ -164,7 +190,10 @@ export default function ChatPage() {
         <div className={s.topbar}>
           <Button aria-label="Open conversations" appearance="subtle" icon={<NavigationRegular />} onClick={() => setDrawerOpen(true)} />
           <div className={s.brand}><span className={s.brandMark} /> Pulse</div>
-          <div style={{ marginLeft: "auto" }}>
+          <div style={{ marginLeft: "auto", display: "flex", gap: 4 }}>
+            <Tooltip content="Search" relationship="label">
+              <Button aria-label="Search messages" appearance="subtle" icon={<SearchRegular />} onClick={() => setSearchOpen(true)} />
+            </Tooltip>
             <Tooltip content="New conversation" relationship="label">
               <Button aria-label="New conversation" appearance="subtle" icon={<EditRegular />} onClick={() => setNewOpen(true)} />
             </Tooltip>
@@ -193,6 +222,8 @@ export default function ChatPage() {
               <ChatHeader
                 conversation={active}
                 onBack={isMobile ? () => setDrawerOpen(true) : undefined}
+                onOpenDetails={() => setDetailsOpen(true)}
+                onOpenSearch={() => setSearchOpen(true)}
               />
               <MessageTimeline
                 messages={messages}
@@ -203,6 +234,7 @@ export default function ChatPage() {
                 onReply={setReplyTo}
                 onRetry={retry}
                 onDiscard={removeLocal}
+                onForward={setForwardMsg}
                 typingUserIds={active.typingUserIds}
               />
               <Composer
@@ -236,6 +268,24 @@ export default function ChatPage() {
         open={newOpen}
         onOpenChange={setNewOpen}
         onCreated={(id) => navigate(`/chat/${id}`)}
+      />
+      {active ? (
+        <ConversationDetailsDrawer
+          open={detailsOpen}
+          onOpenChange={setDetailsOpen}
+          conversation={active}
+          onLeft={() => navigate("/chat")}
+        />
+      ) : null}
+      <ForwardMessageDialog
+        open={!!forwardMsg}
+        onOpenChange={(o) => !o && setForwardMsg(null)}
+        message={forwardMsg}
+      />
+      <GlobalSearchDialog
+        open={searchOpen}
+        onOpenChange={setSearchOpen}
+        onNavigate={(id) => navigate(`/chat/${id}`)}
       />
     </div>
   );

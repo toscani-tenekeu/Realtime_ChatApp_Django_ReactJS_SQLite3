@@ -25,6 +25,7 @@ import {
   ErrorCircleRegular,
   DocumentRegular,
   CheckmarkRegular,
+  ShareRegular,
 
 } from "@fluentui/react-icons";
 import { useState } from "react";
@@ -163,9 +164,10 @@ interface Props {
   onReply: (m: Message) => void;
   onRetry?: (id: string) => void;
   onDiscard?: (id: string) => void;
+  onForward?: (m: Message) => void;
 }
 
-export function MessageBubble({ message, showAvatar, onReply, onRetry, onDiscard }: Props) {
+export function MessageBubble({ message, showAvatar, onReply, onRetry, onDiscard, onForward }: Props) {
   const s = useStyles();
   const toast = useToast();
   const mine = message.authorId === "u_me";
@@ -327,6 +329,9 @@ export function MessageBubble({ message, showAvatar, onReply, onRetry, onDiscard
               <MenuItem icon={<CopyRegular />} onClick={() => { navigator.clipboard?.writeText(message.body); toast.show({ title: "Copied", intent: "success" }); }}>
                 Copy text
               </MenuItem>
+              {onForward && !message.deleted ? (
+                <MenuItem icon={<ShareRegular />} onClick={() => onForward(message)}>Forward…</MenuItem>
+              ) : null}
               {mine ? (
                 <MenuItem icon={<EditRegular />} onClick={() => setEditing(true)}>Edit</MenuItem>
               ) : null}
