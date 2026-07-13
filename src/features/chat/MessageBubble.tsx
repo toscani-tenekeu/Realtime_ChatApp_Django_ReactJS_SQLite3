@@ -25,7 +25,7 @@ import {
   ErrorCircleRegular,
   DocumentRegular,
   CheckmarkRegular,
-  CheckmarkDoubleRegular,
+
 } from "@fluentui/react-icons";
 import { useState } from "react";
 import type { Message } from "@/services/types";
@@ -178,8 +178,8 @@ export function MessageBubble({ message, showAvatar, onReply, onRetry, onDiscard
     if (!mine) return null;
     if (message.status === "sending") return <span aria-label="Sending">…</span>;
     if (message.status === "failed") return null;
-    if (message.status === "read") return <CheckmarkDoubleRegular aria-label="Read" />;
-    if (message.status === "delivered") return <CheckmarkDoubleRegular aria-label="Delivered" style={{ opacity: 0.6 }} />;
+    if (message.status === "read") return <span aria-label="Read" style={{ color: tokens.colorBrandForeground1, display: "inline-flex" }}><CheckmarkRegular /><CheckmarkRegular style={{ marginLeft: -6 }} /></span>;
+    if (message.status === "delivered") return <span aria-label="Delivered" style={{ opacity: 0.7, display: "inline-flex" }}><CheckmarkRegular /><CheckmarkRegular style={{ marginLeft: -6 }} /></span>;
     return <CheckmarkRegular aria-label="Sent" />;
   }
 
