@@ -106,7 +106,7 @@ export default function LandingPage() {
       <header className={s.header}>
         <div className={s.brand}>
           <span className={s.brandMark} aria-hidden />
-          Pulse
+          Realtime ChatApp
         </div>
         <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
           <ThemeToggle />
@@ -124,8 +124,8 @@ export default function LandingPage() {
           <span className={s.eyebrow}>Real-time messaging | Fluent 2</span>
           <Title1 as="h1">Conversations that keep pace with your team.</Title1>
           <Body1 style={{ color: tokens.colorNeutralForeground2, maxWidth: 520 }}>
-            Pulse is a focused chat workspace with direct messages, groups, mentions, reactions, and
-            attachments in a calm, keyboard-first interface.
+            Realtime ChatApp is a focused chat workspace with direct messages, groups, mentions,
+            reactions, and attachments in a calm, keyboard-first interface.
           </Body1>
           <div className={s.ctas}>
             <Link to="/register">
@@ -172,7 +172,7 @@ export default function LandingPage() {
         </div>
       </section>
 
-      <footer className={s.footer}>&copy; {new Date().getFullYear()} Pulse Chat</footer>
+      <footer className={s.footer}>&copy; {new Date().getFullYear()} Realtime ChatApp</footer>
     </div>
   );
 }

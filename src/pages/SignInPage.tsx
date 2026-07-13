@@ -58,7 +58,7 @@ export default function SignInPage() {
   }
 
   return (
-    <AuthLayout title="Welcome back" subtitle="Sign in to your Pulse account.">
+    <AuthLayout title="Welcome back" subtitle="Sign in to your Realtime ChatApp account.">
       <form className={s.form} onSubmit={onSubmit} noValidate>
         {error ? (
           <MessageBar intent="error">

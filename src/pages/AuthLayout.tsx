@@ -77,7 +77,7 @@ export function AuthLayout({ title, subtitle, children, quote }: Props) {
       <aside className={s.aside}>
         <Link to="/" className={s.brand} style={{ color: "inherit", textDecoration: "none" }}>
           <span className={s.brandMark} aria-hidden />
-          Pulse
+          Realtime ChatApp
         </Link>
         <div className={s.quote}>
           <Title2 as="p">
@@ -85,7 +85,7 @@ export function AuthLayout({ title, subtitle, children, quote }: Props) {
           </Title2>
         </div>
         <div style={{ color: tokens.colorNeutralForeground3, fontSize: tokens.fontSizeBase200 }}>
-          © {new Date().getFullYear()} Pulse Chat
+          © {new Date().getFullYear()} Realtime ChatApp
         </div>
       </aside>
       <main className={s.main}>
@@ -96,7 +96,7 @@ export function AuthLayout({ title, subtitle, children, quote }: Props) {
             style={{ color: "inherit", textDecoration: "none" }}
           >
             <span className={s.brandMark} aria-hidden />
-            Pulse
+            Realtime ChatApp
           </Link>
           <div style={{ marginLeft: "auto" }}>
             <ThemeToggle />

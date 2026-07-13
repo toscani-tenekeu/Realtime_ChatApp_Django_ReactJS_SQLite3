@@ -60,7 +60,10 @@ export default function ForgotPasswordPage() {
   }
 
   return (
-    <AuthLayout title="Reset your password" subtitle="Enter the email you use for Pulse.">
+    <AuthLayout
+      title="Reset your password"
+      subtitle="Enter the email you use for Realtime ChatApp."
+    >
       <form className={s.form} onSubmit={onSubmit} noValidate>
         <Field
           label="Email"

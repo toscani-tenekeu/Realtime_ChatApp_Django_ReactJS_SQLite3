@@ -1,6 +1,10 @@
-# Pulse Chat
+# Realtime ChatApp
 
-Pulse Chat is a Fluent UI React frontend backed by Django, Django REST Framework, Channels, and SQLite. The repository includes seeded demo data, API integration, browser-based end-to-end tests, GitHub Actions CI, and reproducible README screenshots.
+Realtime ChatApp is a full-stack real-time messaging application with a React frontend and a Django backend. It combines Fluent UI, Django REST Framework, Channels, and SQLite3 to provide a focused workspace for direct messages and group conversations.
+
+The project includes token authentication, WebSocket delivery, reactions, replies, forwarding, deterministic demo data, Playwright E2E coverage, README screenshots, and GitHub Actions CI.
+
+Repository: [toscani-tenekeu/Realtime_ChatApp_Django_ReactJS_SQLite3](https://github.com/toscani-tenekeu/Realtime_ChatApp_Django_ReactJS_SQLite3)
 
 ## Screenshots
 
@@ -12,7 +16,7 @@ Pulse Chat is a Fluent UI React frontend backed by Django, Django REST Framework
 
 ## Stack
 
-- React 19 + Vite + Fluent UI 9
+- React 19 + Vite + Fluent UI
 - Django + Django REST Framework + Channels
 - SQLite for local development
 - Playwright for E2E coverage
