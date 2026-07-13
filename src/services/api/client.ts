@@ -1,5 +1,5 @@
 const API_URL = (import.meta.env.VITE_API_URL as string | undefined) ?? "http://localhost:8000/api";
-const TOKEN_KEY = "pulse_api_token_v1";
+const TOKEN_KEY = "realtime_chatapp_api_token_v1";
 
 export const tokenStore = {
   get: () => window.localStorage.getItem(TOKEN_KEY),

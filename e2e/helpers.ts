@@ -1,9 +1,9 @@
 import { expect, type Page } from "@playwright/test";
 
 export const demoUsers = {
-  you: { identifier: "you@pulse.app", password: "PulseDemo!2026" },
-  ada: { identifier: "ada@pulse.app", password: "PulseDemo!2026" },
-  linus: { identifier: "linus@pulse.app", password: "PulseDemo!2026" },
+  you: { identifier: "admin@example.com", password: "user1234" },
+  ada: { identifier: "ada@example.com", password: "user1234" },
+  linus: { identifier: "linus@example.com", password: "user1234" },
 } as const;
 
 export async function signIn(

@@ -2,6 +2,7 @@ import { defineConfig, devices } from "@playwright/test";
 
 const frontendUrl = "http://127.0.0.1:4174";
 const apiUrl = "http://127.0.0.1:8001/api";
+const pythonBin = process.env.PYTHON_BIN ?? "python";
 
 export default defineConfig({
   testDir: "./e2e",
@@ -24,7 +25,7 @@ export default defineConfig({
   },
   webServer: [
     {
-      command: "python backend/manage.py runserver 127.0.0.1:8001 --noreload",
+      command: `${pythonBin} backend/manage.py runserver 127.0.0.1:8001 --noreload`,
       url: "http://127.0.0.1:8001/api/health/",
       reuseExistingServer: true,
       env: {

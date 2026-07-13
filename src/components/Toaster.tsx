@@ -17,7 +17,7 @@ interface Ctx {
 const ToastCtx = createContext<Ctx | null>(null);
 
 export function ToasterProvider({ children }: { children: ReactNode }) {
-  const toasterId = useId("pulse-toaster");
+  const toasterId = useId("realtime-chatapp-toaster");
   const { dispatchToast } = useToastController(toasterId);
 
   const show = useCallback<Ctx["show"]>(

@@ -41,8 +41,19 @@ const useStyles = makeStyles({
     backgroundColor: tokens.colorNeutralBackground1,
     minHeight: "60px",
   },
-  info: { flex: 1, minWidth: 0, display: "flex", flexDirection: "column", cursor: "pointer" },
-  title: { fontWeight: tokens.fontWeightSemibold, fontSize: tokens.fontSizeBase400 },
+  info: {
+    flex: 1,
+    minWidth: 0,
+    display: "flex",
+    flexDirection: "column",
+    cursor: "pointer",
+    color: tokens.colorNeutralForeground1,
+  },
+  title: {
+    fontWeight: tokens.fontWeightSemibold,
+    fontSize: tokens.fontSizeBase400,
+    color: tokens.colorNeutralForeground1,
+  },
   subtitle: { fontSize: tokens.fontSizeBase200, color: tokens.colorNeutralForeground3 },
 });
 

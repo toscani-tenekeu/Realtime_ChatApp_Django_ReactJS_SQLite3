@@ -4,7 +4,7 @@ import { FluentProvider, webDarkTheme, webLightTheme } from "@fluentui/react-com
 export type ThemePref = "light" | "dark" | "system";
 type Mode = "light" | "dark";
 
-const THEME_KEY = "pulse_theme_v1";
+const THEME_KEY = "realtime_chatapp_theme_v1";
 
 interface Ctx {
   mode: Mode;

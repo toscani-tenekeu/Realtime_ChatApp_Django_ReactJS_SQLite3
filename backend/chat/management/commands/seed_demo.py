@@ -6,15 +6,16 @@ from django.utils import timezone
 from chat.models import Conversation, Membership, Message, Reaction, User, UserSettings
 
 
-DEMO_PASSWORD = "PulseDemo!2026"
+DEMO_PASSWORD = "user1234"
+OWNER_PASSWORD = "user1234"
 USERS = [
-    ("u_me", "you", "you@pulse.app", "You", "online", "Product designer. Coffee first."),
-    ("u_ada", "ada", "ada@pulse.app", "Ada Lovelace", "online", "Notes on notes."),
-    ("u_lin", "linus", "linus@pulse.app", "Linus Wren", "away", "Systems."),
-    ("u_mia", "mia", "mia@pulse.app", "Mia Okafor", "offline", "Illustration & type."),
-    ("u_ren", "renji", "renji@pulse.app", "Renji Sato", "online", "Weekend runner."),
-    ("u_pri", "priya", "priya@pulse.app", "Priya Menon", "away", ""),
-    ("u_kai", "kai", "kai@pulse.app", "Kai Berg", "offline", ""),
+    ("u_me", "toscani", "admin@example.com", "Toscani", "online", "Product designer. Coffee first."),
+    ("u_ada", "ada", "ada@example.com", "Ada Lovelace", "online", "Notes on notes."),
+    ("u_lin", "linus", "linus@example.com", "Linus Wren", "away", "Systems."),
+    ("u_mia", "mia", "mia@example.com", "Mia Okafor", "offline", "Illustration & type."),
+    ("u_ren", "renji", "renji@example.com", "Renji Sato", "online", "Weekend runner."),
+    ("u_pri", "priya", "priya@example.com", "Priya Menon", "away", ""),
+    ("u_kai", "kai", "kai@example.com", "Kai Berg", "offline", ""),
 ]
 
 CONVERSATIONS = [
@@ -54,7 +55,7 @@ MESSAGES = [
 
 
 class Command(BaseCommand):
-    help = "Create or refresh deterministic Pulse demo users, conversations and messages."
+    help = "Create or refresh deterministic Realtime ChatApp demo users, conversations and messages."
 
     def add_arguments(self, parser):
         parser.add_argument("--reset", action="store_true", help="Delete the existing demo records first.")
@@ -74,12 +75,17 @@ class Command(BaseCommand):
                     "username": username,
                     "email": email,
                     "display_name": display_name,
+                    "first_name": "Toscani" if user_id == "u_me" else "",
+                    "last_name": "TENEKEU" if user_id == "u_me" else "",
                     "presence": presence,
                     "bio": bio,
                     "last_seen": timezone.now() if presence == "offline" else None,
+                    "is_active": True,
+                    "is_staff": user_id == "u_me",
+                    "is_superuser": user_id == "u_me",
                 },
             )
-            user.set_password(DEMO_PASSWORD)
+            user.set_password(OWNER_PASSWORD if user_id == "u_me" else DEMO_PASSWORD)
             user.save(update_fields=["password"])
             UserSettings.objects.get_or_create(user=user)
             users[user_id] = user
@@ -127,6 +133,6 @@ class Command(BaseCommand):
         self.stdout.write(
             self.style.SUCCESS(
                 f"Demo database ready: {len(USERS)} users, {len(CONVERSATIONS)} conversations, "
-                f"{len(MESSAGES)} messages. Password: {DEMO_PASSWORD}"
+                f"{len(MESSAGES)} messages. Demo password: {DEMO_PASSWORD}"
             )
         )

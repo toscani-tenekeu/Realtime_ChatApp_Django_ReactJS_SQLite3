@@ -27,6 +27,15 @@ def member_conversation(user, pk):
 
 @api_view(["GET"])
 @permission_classes([AllowAny])
+def api_root(request):
+    return Response({
+        "name": "Realtime ChatApp API",
+        "status": "ok",
+        "health": request.build_absolute_uri("/api/health/"),
+    })
+
+@api_view(["GET"])
+@permission_classes([AllowAny])
 def health(request):
     return Response({"status": "ok"})
 
@@ -93,7 +102,7 @@ def reset_request(request):
         uid = urlsafe_base64_encode(force_bytes(user.pk))
         token = default_token_generator.make_token(user)
         link = f"{settings.FRONTEND_URL}/reset-password?token={uid}:{token}"
-        send_mail("Reset your Pulse password", f"Use this link to reset your password:\n\n{link}",
+        send_mail("Reset your Realtime ChatApp password", f"Use this link to reset your password:\n\n{link}",
                   settings.DEFAULT_FROM_EMAIL, [user.email])
     return Response({"detail": "If that account exists, reset instructions have been prepared."})
 
