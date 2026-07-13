@@ -32,3 +32,15 @@ test("signed-in user can create a new group conversation", async ({ page }) => {
     page.getByRole("button", { name: /Open conversation Playwright Sprint/ }),
   ).toBeVisible();
 });
+
+test("direct-message header exposes audio and video call controls", async ({ page }) => {
+  await signIn(page);
+  await page.goto("/chat/c_ada", { waitUntil: "domcontentloaded" });
+
+  await expect(page.getByRole("button", { name: "Start audio call" })).toBeVisible();
+  await expect(page.getByRole("button", { name: "Start video call" })).toBeVisible();
+  await expect(page.getByRole("button", { name: "Start audio call" })).toHaveAttribute(
+    "aria-label",
+    "Start audio call",
+  );
+});

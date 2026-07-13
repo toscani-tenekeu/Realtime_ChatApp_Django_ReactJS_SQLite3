@@ -17,18 +17,46 @@ import {
 } from "@/services/api/identity";
 import type { User } from "@/services/types";
 
+export interface RealtimeEvent {
+  event: string;
+  conversationId?: string;
+  callId?: string;
+  fromUserId?: string;
+  toUserId?: string;
+  signalType?: string;
+  kind?: "audio" | "video";
+  payload?: unknown;
+}
+
 export class ApiChatService implements ChatService {
   private listeners = new Set<() => void>();
+  private eventListeners = new Set<(event: RealtimeEvent) => void>();
   private socket: WebSocket | null = null;
+  private socketWaiters: Array<(socket: WebSocket) => void> = [];
   private reconnect?: number;
   private emit = () => this.listeners.forEach((listener) => listener());
   private connect() {
-    if (this.socket || this.listeners.size === 0) return;
+    if (this.socket || (this.listeners.size === 0 && this.eventListeners.size === 0)) return;
     this.socket = new WebSocket(websocketUrl());
-    this.socket.onmessage = this.emit;
+    this.socket.onopen = () => {
+      const socket = this.socket;
+      if (!socket) return;
+      this.socketWaiters.splice(0).forEach((resolve) => resolve(socket));
+    };
+    this.socket.onmessage = (message) => {
+      try {
+        const event = JSON.parse(message.data) as RealtimeEvent;
+        this.eventListeners.forEach((listener) => listener(event));
+      } catch {
+        // Ignore malformed realtime messages and keep the chat socket alive.
+      }
+      this.emit();
+    };
     this.socket.onclose = () => {
       this.socket = null;
-      if (this.listeners.size) this.reconnect = window.setTimeout(() => this.connect(), 1500);
+      if (this.listeners.size || this.eventListeners.size) {
+        this.reconnect = window.setTimeout(() => this.connect(), 1500);
+      }
     };
     this.socket.onerror = () => this.socket?.close();
   }
@@ -37,12 +65,42 @@ export class ApiChatService implements ChatService {
     this.connect();
     return () => {
       this.listeners.delete(listener);
-      if (!this.listeners.size) {
+      if (!this.listeners.size && !this.eventListeners.size) {
         clearTimeout(this.reconnect);
         this.socket?.close();
         this.socket = null;
       }
     };
+  }
+  subscribeEvents(listener: (event: RealtimeEvent) => void) {
+    this.eventListeners.add(listener);
+    this.connect();
+    return () => {
+      this.eventListeners.delete(listener);
+      if (!this.listeners.size && !this.eventListeners.size) {
+        clearTimeout(this.reconnect);
+        this.socket?.close();
+        this.socket = null;
+      }
+    };
+  }
+  async sendRealtime(message: Record<string, unknown>) {
+    this.connect();
+    const socket = await new Promise<WebSocket>((resolve, reject) => {
+      if (this.socket?.readyState === WebSocket.OPEN) {
+        resolve(this.socket);
+        return;
+      }
+      const timeout = window.setTimeout(() => {
+        this.socketWaiters = this.socketWaiters.filter((item) => item !== resolve);
+        reject(new Error("Realtime connection is not ready."));
+      }, 5000);
+      this.socketWaiters.push((readySocket) => {
+        window.clearTimeout(timeout);
+        resolve(readySocket);
+      });
+    });
+    socket.send(JSON.stringify(message));
   }
   async listConversations() {
     const items = (await api<Conversation[]>("/conversations/")).map(normalizeConversation);
