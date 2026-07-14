@@ -37,13 +37,17 @@ export class ApiChatService implements ChatService {
   private emit = () => this.listeners.forEach((listener) => listener());
   private connect() {
     if (this.socket || (this.listeners.size === 0 && this.eventListeners.size === 0)) return;
-    this.socket = new WebSocket(websocketUrl());
-    this.socket.onopen = () => {
-      const socket = this.socket;
-      if (!socket) return;
+    const socket = new WebSocket(websocketUrl());
+    this.socket = socket;
+    socket.onopen = () => {
+      if (this.socket !== socket) {
+        socket.close();
+        return;
+      }
+      clearTimeout(this.reconnect);
       this.socketWaiters.splice(0).forEach((resolve) => resolve(socket));
     };
-    this.socket.onmessage = (message) => {
+    socket.onmessage = (message) => {
       try {
         const event = JSON.parse(message.data) as RealtimeEvent;
         this.eventListeners.forEach((listener) => listener(event));
@@ -52,13 +56,16 @@ export class ApiChatService implements ChatService {
       }
       this.emit();
     };
-    this.socket.onclose = () => {
+    socket.onclose = () => {
+      if (this.socket !== socket) return;
       this.socket = null;
       if (this.listeners.size || this.eventListeners.size) {
         this.reconnect = window.setTimeout(() => this.connect(), 1500);
       }
     };
-    this.socket.onerror = () => this.socket?.close();
+    socket.onerror = () => {
+      if (this.socket === socket) socket.close();
+    };
   }
   subscribe(listener: () => void) {
     this.listeners.add(listener);

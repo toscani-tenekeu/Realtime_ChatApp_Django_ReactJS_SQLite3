@@ -48,6 +48,15 @@ function callError(error: unknown) {
   if (error instanceof DOMException && error.name === "NotFoundError") {
     return "No camera or microphone was found.";
   }
+  if (error instanceof DOMException && error.name === "NotReadableError") {
+    return "The camera is already in use by another tab or application. Close it, then try video again, or use an audio call.";
+  }
+  if (error instanceof DOMException && error.name === "OverconstrainedError") {
+    return "This camera cannot provide the requested video mode.";
+  }
+  if (error instanceof DOMException && error.name === "SecurityError") {
+    return "Camera access requires HTTPS and permission for this site.";
+  }
   return error instanceof Error ? error.message : "Unable to start the call.";
 }
 
@@ -58,6 +67,7 @@ export function useCallSession(userId: ID | undefined) {
   const pendingOffer = useRef<RTCSessionDescriptionInit | null>(null);
   const callRef = useRef<CallState | null>(null);
   const remoteBackendId = useRef<string>("");
+  const localStreamRef = useRef<MediaStream | null>(null);
 
   useEffect(() => {
     callRef.current = call;
@@ -81,6 +91,8 @@ export function useCallSession(userId: ID | undefined) {
     peerRef.current?.getSenders().forEach((sender) => sender.track?.stop());
     peerRef.current?.close();
     peerRef.current = null;
+    localStreamRef.current?.getTracks().forEach((track) => track.stop());
+    localStreamRef.current = null;
   }, []);
 
   const finish = useCallback(
@@ -185,6 +197,7 @@ export function useCallSession(userId: ID | undefined) {
           audio: true,
           video: kind === "video",
         });
+        localStreamRef.current = stream;
         setCall((current) => (current ? { ...current, localStream: stream } : current));
         const peer = createPeer(active);
         stream.getTracks().forEach((track) => peer.addTrack(track, stream));
@@ -246,6 +259,7 @@ export function useCallSession(userId: ID | undefined) {
         audio: true,
         video: active.kind === "video",
       });
+      localStreamRef.current = stream;
       setCall((current) => (current ? { ...current, localStream: stream } : current));
       const peer = createPeer(active);
       stream.getTracks().forEach((track) => peer.addTrack(track, stream));
@@ -271,11 +285,19 @@ export function useCallSession(userId: ID | undefined) {
         kind: active.kind,
       });
     } catch (error) {
+      await sendSignal({
+        callId: active.id,
+        conversationId: active.conversationId,
+        toUserId: remoteBackendId.current,
+        signalType: "reject",
+        kind: active.kind,
+      }).catch(() => undefined);
+      closePeer();
       setCall((current) =>
         current ? { ...current, status: "failed", error: callError(error) } : current,
       );
     }
-  }, [createPeer, flushCandidates, sendSignal]);
+  }, [closePeer, createPeer, flushCandidates, sendSignal]);
 
   const rejectCall = useCallback(async () => {
     const active = callRef.current;
