@@ -32,6 +32,7 @@ Download the editable project overview deck: [Realtime_ChatApp_Django_ReactJS_SQ
 - Direct messages and group conversations
 - Replies, reactions, forwarding, typing events, and read state
 - One-to-one audio and video calls with WebRTC (ring, accept/decline, mute, camera toggle, and hang up)
+- Voice messages recorded in the browser and sent as playable audio attachments
 - Profile, password reset, blocked users, and user settings
 - Deterministic demo seed for local demos and E2E runs
 
@@ -66,6 +67,19 @@ $env:VITE_RTC_ICE_SERVERS='[{"urls":"stun:stun.l.google.com:19302"}]'
 ```
 
 The current SQLite database and in-memory Channels layer are suitable for local or single-process demos. A production deployment should use Redis for the channel layer and a TURN service for reliable media connectivity across restrictive networks.
+
+The composer also includes a microphone button for voice messages. Grant microphone permission, stop the recording, and send it like any other attachment. Audio is stored by Django and rendered with native browser playback controls.
+
+For LAN testing of microphone, camera, and voice recording, use an HTTPS origin. Generate a short-lived certificate with a trusted local certificate tool (or the OpenSSL certificate used by this workspace), then run Uvicorn and Vite with the certificate paths:
+
+```powershell
+$env:VITE_API_URL="https://192.168.1.168:8000/api"
+$env:VITE_HTTPS_CERT="$pwd\dev-certs\lan-cert.pem"
+$env:VITE_HTTPS_KEY="$pwd\dev-certs\lan-key.pem"
+python -m uvicorn realtime_chatapp.asgi:application --host 0.0.0.0 --port 8000 --ssl-keyfile "$pwd\dev-certs\lan-key.pem" --ssl-certfile "$pwd\dev-certs\lan-cert.pem"
+```
+
+Open `https://192.168.1.168:4173/` and accept the local certificate warning for the frontend and backend once. Plain HTTP works for chat, but Firefox only exposes microphone/camera APIs on HTTPS or `localhost`.
 
 ## Production-like local run
 

@@ -23,6 +23,7 @@ test-results/
 backend/db.sqlite3
 backend/media/
 backend/staticfiles/
+dev-certs/
 **/__pycache__/
 *.py[cod]
 

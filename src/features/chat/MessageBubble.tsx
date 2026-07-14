@@ -24,6 +24,7 @@ import {
   ArrowClockwiseRegular,
   ErrorCircleRegular,
   DocumentRegular,
+  Speaker2Regular,
   CheckmarkRegular,
   ShareRegular,
 } from "@fluentui/react-icons";
@@ -291,6 +292,11 @@ export function MessageBubble({
                   {message.attachments.map((a) =>
                     a.kind === "image" ? (
                       <img key={a.id} src={a.url} alt={a.name} className={s.imageAttach} />
+                    ) : a.kind === "audio" ? (
+                      <div key={a.id} className={s.fileAttach}>
+                        <Speaker2Regular />
+                        <audio controls preload="metadata" src={a.url} aria-label={a.name} />
+                      </div>
                     ) : (
                       <a
                         key={a.id}

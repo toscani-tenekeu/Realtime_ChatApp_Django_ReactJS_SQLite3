@@ -1,6 +1,13 @@
 import { expect, test } from "@playwright/test";
 import { signIn } from "./helpers";
 
+test.use({
+  permissions: ["microphone", "camera"],
+  launchOptions: {
+    args: ["--use-fake-ui-for-media-stream", "--use-fake-device-for-media-stream"],
+  },
+});
+
 test("signed-in user can send a message in a seeded conversation", async ({ page }) => {
   await signIn(page);
   await page.goto("/chat/c_design", { waitUntil: "domcontentloaded" });
@@ -39,8 +46,26 @@ test("direct-message header exposes audio and video call controls", async ({ pag
 
   await expect(page.getByRole("button", { name: "Start audio call" })).toBeVisible();
   await expect(page.getByRole("button", { name: "Start video call" })).toBeVisible();
+  await expect(page.getByRole("button", { name: "Record voice message" })).toBeVisible();
   await expect(page.getByRole("button", { name: "Start audio call" })).toHaveAttribute(
     "aria-label",
     "Start audio call",
   );
+});
+
+test("signed-in user can record and send a voice message", async ({ page }) => {
+  await signIn(page);
+  await page.goto("/chat/c_ada", { waitUntil: "domcontentloaded" });
+
+  await page.getByRole("button", { name: "Record voice message" }).click();
+  await expect(page.getByRole("status")).toContainText("Recording");
+  await page.waitForTimeout(750);
+  await page.getByRole("button", { name: "Stop recording" }).click();
+  await expect(page.locator('[data-testid="composer"]')).toContainText("voice-message-", {
+    timeout: 5_000,
+  });
+  await page.getByRole("button", { name: "Send message" }).click();
+  await expect(page.locator('audio[aria-label^="voice-message-"]')).toBeVisible({
+    timeout: 15_000,
+  });
 });

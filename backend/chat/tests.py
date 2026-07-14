@@ -1,5 +1,6 @@
 from rest_framework.test import APITestCase
 from django.core import mail
+from django.core.files.uploadedfile import SimpleUploadedFile
 from urllib.parse import urlparse, parse_qs
 from .models import User
 
@@ -24,8 +25,14 @@ class ChatApiTests(APITestCase):
         self.assertEqual(response.status_code, 201, response.data)
         conversation_id = response.data["id"]
 
+        audio = SimpleUploadedFile("voice-message.webm", b"fake audio", content_type="audio/webm")
+        response = self.client.post("/api/attachments/", {"file": audio}, format="multipart")
+        self.assertEqual(response.status_code, 201, response.data)
+        self.assertEqual(response.data["kind"], "audio")
+        attachment_id = response.data["id"]
+
         response = self.client.post(f"/api/conversations/{conversation_id}/messages/", {
-            "body": "Hello Ada", "clientId": "tmp_1", "attachmentIds": [],
+            "body": "Hello Ada", "clientId": "tmp_1", "attachmentIds": [attachment_id],
         }, format="json")
         self.assertEqual(response.status_code, 201, response.data)
         message_id = response.data["id"]
@@ -33,6 +40,7 @@ class ChatApiTests(APITestCase):
         response = self.client.post(f"/api/messages/{message_id}/react/", {"emoji": "👍"}, format="json")
         self.assertEqual(response.status_code, 200, response.data)
         self.assertEqual(response.data["reactions"][0]["userIds"], [me["user"]["id"]])
+        self.assertEqual(response.data["attachments"][0]["kind"], "audio")
 
         response = self.client.get(f"/api/conversations/{conversation_id}/messages/")
         self.assertEqual(response.status_code, 200)
