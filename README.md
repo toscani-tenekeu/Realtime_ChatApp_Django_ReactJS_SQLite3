@@ -81,6 +81,20 @@ python -m uvicorn realtime_chatapp.asgi:application --host 0.0.0.0 --port 8000 -
 
 Open `https://192.168.1.168:4173/` and accept the local certificate warning for the frontend and backend once. Plain HTTP works for chat, but Firefox only exposes microphone/camera APIs on HTTPS or `localhost`.
 
+### One-command LAN launcher
+
+From the repository root, run:
+
+```powershell
+python launch_host.py --seed
+```
+
+The launcher applies migrations, optionally seeds demo data, starts the HTTPS Django/Uvicorn backend and HTTPS Vite frontend on `0.0.0.0`, detects your LAN IP, prints the URLs and PIDs, and writes service logs to `logs/host-*.log`. Stop only the services started by it with:
+
+```powershell
+python launch_host.py --stop
+```
+
 ## Production-like local run
 
 This runs a production frontend build and the Django ASGI server without Vite HMR. It is useful for LAN/ngrok smoke tests; SQLite and the in-memory Channels layer are still intended for single-process demos, not a multi-instance deployment.
