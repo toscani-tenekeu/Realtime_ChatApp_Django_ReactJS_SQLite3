@@ -172,6 +172,15 @@ export function useCallSession(userId: ID | undefined) {
       remoteBackendId.current = toApiId(remoteId);
       setCall(active);
       try {
+        // Ring immediately so the recipient is alerted even while the caller
+        // is responding to the browser microphone/camera permission prompt.
+        await sendSignal({
+          callId: active.id,
+          ...active,
+          toUserId: remoteBackendId.current,
+          signalType: "ring",
+          kind,
+        });
         const stream = await navigator.mediaDevices.getUserMedia({
           audio: true,
           video: kind === "video",
@@ -179,22 +188,46 @@ export function useCallSession(userId: ID | undefined) {
         setCall((current) => (current ? { ...current, localStream: stream } : current));
         const peer = createPeer(active);
         stream.getTracks().forEach((track) => peer.addTrack(track, stream));
-        await sendSignal({
-          ...active,
-          toUserId: remoteBackendId.current,
-          signalType: "ring",
-          kind,
-        });
         const offer = await peer.createOffer();
         await peer.setLocalDescription(offer);
         await sendSignal({
+          callId: active.id,
           ...active,
           toUserId: remoteBackendId.current,
           signalType: "offer",
           kind,
           payload: offer,
         });
+        // WebSocket delivery can race a freshly opened recipient session.
+        // Retry the invitation while the caller is still waiting for an answer.
+        for (const delay of [1000, 3000]) {
+          window.setTimeout(() => {
+            if (callRef.current?.id !== id || callRef.current.status !== "calling") return;
+            void sendSignal({
+              callId: active.id,
+              ...active,
+              toUserId: remoteBackendId.current,
+              signalType: "ring",
+              kind,
+            });
+            void sendSignal({
+              callId: active.id,
+              ...active,
+              toUserId: remoteBackendId.current,
+              signalType: "offer",
+              kind,
+              payload: offer,
+            });
+          }, delay);
+        }
       } catch (error) {
+        await sendSignal({
+          callId: active.id,
+          ...active,
+          toUserId: remoteBackendId.current,
+          signalType: "hangup",
+          kind,
+        }).catch(() => undefined);
         setCall((current) =>
           current ? { ...current, status: "failed", error: callError(error) } : current,
         );
@@ -221,6 +254,7 @@ export function useCallSession(userId: ID | undefined) {
         const answer = await peer.createAnswer();
         await peer.setLocalDescription(answer);
         await sendSignal({
+          callId: active.id,
           ...active,
           toUserId: remoteBackendId.current,
           signalType: "answer",
@@ -230,6 +264,7 @@ export function useCallSession(userId: ID | undefined) {
         await flushCandidates(peer);
       }
       await sendSignal({
+        callId: active.id,
         ...active,
         toUserId: remoteBackendId.current,
         signalType: "accept",
@@ -246,6 +281,7 @@ export function useCallSession(userId: ID | undefined) {
     const active = callRef.current;
     if (!active) return;
     await sendSignal({
+      callId: active.id,
       ...active,
       toUserId: remoteBackendId.current,
       signalType: "reject",
@@ -277,6 +313,8 @@ export function useCallSession(userId: ID | undefined) {
         return;
       if (event.signalType === "ring") {
         if (callRef.current) {
+          if (callRef.current.id === event.callId && callRef.current.direction === "incoming")
+            return;
           void sendSignal({
             callId: event.callId,
             conversationId: event.conversationId ?? "",
@@ -301,9 +339,25 @@ export function useCallSession(userId: ID | undefined) {
         });
         return;
       }
-      if (!callRef.current || callRef.current.id !== event.callId) return;
       if (event.signalType === "offer") {
         pendingOffer.current = event.payload as RTCSessionDescriptionInit;
+        if (!callRef.current) {
+          remoteBackendId.current = event.fromUserId;
+          setCall({
+            id: event.callId,
+            kind: event.kind ?? "video",
+            status: "ringing",
+            direction: "incoming",
+            conversationId: event.conversationId ?? "",
+            remoteUserId: event.fromUserId,
+            localStream: null,
+            remoteStream: null,
+            muted: false,
+            cameraOff: event.kind !== "video",
+          });
+          return;
+        }
+        if (callRef.current.id !== event.callId) return;
         const active = callRef.current;
         const peer = peerRef.current;
         if (active.direction === "incoming" && peer && active.status === "connecting") {
@@ -313,6 +367,7 @@ export function useCallSession(userId: ID | undefined) {
               const answer = await peer.createAnswer();
               await peer.setLocalDescription(answer);
               await sendSignal({
+                callId: active.id,
                 ...active,
                 toUserId: remoteBackendId.current,
                 signalType: "answer",
@@ -325,6 +380,11 @@ export function useCallSession(userId: ID | undefined) {
         }
         return;
       }
+      if (event.signalType === "ice-candidate" && event.payload && !callRef.current) {
+        pendingSignals.current.push({ type: "ice-candidate", payload: event.payload });
+        return;
+      }
+      if (!callRef.current || callRef.current.id !== event.callId) return;
       if (event.signalType === "answer" && peerRef.current && event.payload) {
         void peerRef.current
           .setRemoteDescription(event.payload as RTCSessionDescriptionInit)
