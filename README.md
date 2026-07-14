@@ -95,6 +95,14 @@ The launcher applies migrations, optionally seeds demo data, starts the HTTPS Dj
 python launch_host.py --stop
 ```
 
+If another device on the LAN cannot connect, allow the two application ports through Windows Firewall from an Administrator terminal:
+
+```powershell
+python launch_host.py --firewall
+```
+
+Only TCP ports `4173` (frontend) and `8000` (backend) are opened. The remote device must use the LAN HTTPS URL, accept the local certificate, and be connected to the same non-isolated network.
+
 ## Production-like local run
 
 This runs a production frontend build and the Django ASGI server without Vite HMR. It is useful for LAN/ngrok smoke tests; SQLite and the in-memory Channels layer are still intended for single-process demos, not a multi-instance deployment.

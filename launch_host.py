@@ -112,6 +112,29 @@ def stop_port_services() -> None:
             print(f"Stopped existing project process PID {pid} on port {port}.")
 
 
+def allow_firewall() -> None:
+    """Allow only the app's TCP ports through Windows Firewall."""
+    if os.name != "nt":
+        print("Firewall setup is Windows-only. Allow TCP ports 4173 and 8000 on your host firewall.")
+        return
+    rule_prefix = "Realtime ChatApp"
+    command = (
+        f"New-NetFirewallRule -DisplayName '{rule_prefix} Frontend 4173' "
+        "-Direction Inbound -Action Allow -Protocol TCP -LocalPort 4173 -Profile Any -ErrorAction SilentlyContinue; "
+        f"New-NetFirewallRule -DisplayName '{rule_prefix} Backend 8000' "
+        "-Direction Inbound -Action Allow -Protocol TCP -LocalPort 8000 -Profile Any -ErrorAction SilentlyContinue"
+    )
+    elevated = subprocess.run(
+        ["powershell", "-NoProfile", "-Command", command],
+        check=False,
+    )
+    if elevated.returncode == 0:
+        print("Windows Firewall rules added for TCP ports 4173 and 8000.")
+        return
+    print("Firewall permission was denied. Open PowerShell as Administrator and run:")
+    print(f"  {command}")
+
+
 def ensure_certificates() -> tuple[Path, Path]:
     cert = CERT_DIR / "lan-cert.pem"
     key = CERT_DIR / "lan-key.pem"
@@ -326,10 +349,13 @@ def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--stop", action="store_true", help="stop recorded or matching project services")
     parser.add_argument("--seed", action="store_true", help="create or refresh the demo users and conversations")
+    parser.add_argument("--firewall", action="store_true", help="allow inbound TCP ports 4173 and 8000")
     args = parser.parse_args()
     if args.stop:
         stop_started()
         stop_port_services()
+    elif args.firewall:
+        allow_firewall()
     else:
         launch(seed=args.seed)
 
