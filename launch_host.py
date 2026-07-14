@@ -13,6 +13,7 @@ to stop the recorded services or matching project processes on ports 8000/4173.
 from __future__ import annotations
 
 import argparse
+import base64
 import json
 import os
 import shutil
@@ -124,6 +125,28 @@ def allow_firewall() -> None:
         f"New-NetFirewallRule -DisplayName '{rule_prefix} Backend 8000' "
         "-Direction Inbound -Action Allow -Protocol TCP -LocalPort 8000 -Profile Any -ErrorAction SilentlyContinue"
     )
+    admin_check = subprocess.run(
+        [
+            "powershell",
+            "-NoProfile",
+            "-Command",
+            "([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)",
+        ],
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+    if admin_check.stdout.strip().lower() != "true":
+        encoded = base64.b64encode(command.encode("utf-16le")).decode("ascii")
+        elevate = (
+            "$p = Start-Process powershell.exe -Verb RunAs -Wait -PassThru "
+            f"-ArgumentList '-NoProfile','-EncodedCommand','{encoded}'; exit $p.ExitCode"
+        )
+        print("Requesting Windows Administrator permission for the firewall rules...")
+        elevated = subprocess.run(["powershell", "-NoProfile", "-Command", elevate], check=False)
+        if elevated.returncode == 0:
+            print("Windows Firewall rules added for TCP ports 4173 and 8000.")
+            return
     elevated = subprocess.run(
         ["powershell", "-NoProfile", "-Command", command],
         check=False,
