@@ -51,6 +51,8 @@ test("a direct video call alerts the other signed-in user", async ({ browser }) 
     await receiver.getByRole("button", { name: "Accept" }).click();
     await expect(caller.getByText("Connected")).toBeVisible({ timeout: 20_000 });
     await expect(receiver.getByText("Connected")).toBeVisible({ timeout: 20_000 });
+    await expect(caller.getByRole("timer", { name: "Call duration" })).toContainText("Duration");
+    await expect(receiver.getByRole("timer", { name: "Call duration" })).toContainText("Duration");
   } finally {
     await callerContext.close();
     await receiverContext.close();

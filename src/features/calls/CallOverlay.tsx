@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Button, Card, Text, makeStyles, tokens } from "@fluentui/react-components";
 import {
   CallEndRegular,
@@ -78,9 +78,20 @@ export function CallOverlay({
   onToggleCamera,
 }: Props) {
   const s = useStyles();
+  const [elapsedSeconds, setElapsedSeconds] = useState(0);
   const localRef = useRef<HTMLVideoElement>(null);
   const remoteRef = useRef<HTMLVideoElement>(null);
   const remoteAudioRef = useRef<HTMLAudioElement>(null);
+
+  useEffect(() => {
+    setElapsedSeconds(0);
+    if (call.status !== "connected") return;
+    const startedAt = Date.now();
+    const update = () => setElapsedSeconds(Math.floor((Date.now() - startedAt) / 1000));
+    update();
+    const timer = window.setInterval(update, 1000);
+    return () => window.clearInterval(timer);
+  }, [call.id, call.status]);
 
   useEffect(() => {
     if (localRef.current) localRef.current.srcObject = call.localStream;
@@ -96,6 +107,9 @@ export function CallOverlay({
 
   const incoming = call.direction === "incoming" && call.status === "ringing";
   const failed = call.status === "failed";
+  const formattedDuration = `${String(Math.floor(elapsedSeconds / 60)).padStart(2, "0")}:${String(
+    elapsedSeconds % 60,
+  ).padStart(2, "0")}`;
   return (
     <div className={s.backdrop} role="dialog" aria-label={incoming ? "Incoming call" : "Call"}>
       <Card className={s.panel}>
@@ -112,6 +126,11 @@ export function CallOverlay({
                   ? "Connected"
                   : "Connecting…"}
           </Text>
+          {!incoming && !failed ? (
+            <Text block size={300} aria-label="Call duration" role="timer">
+              {call.status === "connected" ? `Duration ${formattedDuration}` : "Duration 00:00"}
+            </Text>
+          ) : null}
         </div>
         {incoming ? (
           <div className={s.incoming}>
