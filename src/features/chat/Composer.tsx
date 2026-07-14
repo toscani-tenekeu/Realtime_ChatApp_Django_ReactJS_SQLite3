@@ -174,14 +174,25 @@ export function Composer({ onSend, replyTo, onClearReply, disabled, placeholder 
 
   async function startRecording() {
     if (disabled || recording) return;
+    if (!window.isSecureContext) {
+      window.alert("Voice recording requires HTTPS (or localhost). Open the secure app URL.");
+      return;
+    }
     if (!navigator.mediaDevices?.getUserMedia || typeof MediaRecorder === "undefined") {
       window.alert("Audio recording is not supported by this browser.");
       return;
     }
     try {
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-      const mimeType = ["audio/webm;codecs=opus", "audio/webm", "audio/mp4"].find((type) =>
-        MediaRecorder.isTypeSupported(type),
+      const mimeType = [
+        "audio/webm;codecs=opus",
+        "audio/webm",
+        "audio/ogg;codecs=opus",
+        "audio/mp4",
+      ].find(
+        (type) =>
+          typeof MediaRecorder.isTypeSupported !== "function" ||
+          MediaRecorder.isTypeSupported(type),
       );
       const recorder = new MediaRecorder(stream, mimeType ? { mimeType } : undefined);
       recordingStreamRef.current = stream;
@@ -193,7 +204,7 @@ export function Composer({ onSend, replyTo, onClearReply, disabled, placeholder 
       recorder.onstop = () => {
         const type = recorder.mimeType || mimeType || "audio/webm";
         const blob = new Blob(recordingChunksRef.current, { type });
-        const extension = type.includes("mp4") ? "m4a" : "webm";
+        const extension = type.includes("mp4") ? "m4a" : type.includes("ogg") ? "ogg" : "webm";
         if (blob.size > 0)
           queueRecording(new File([blob], `voice-message-${Date.now()}.${extension}`, { type }));
         recordingChunksRef.current = [];

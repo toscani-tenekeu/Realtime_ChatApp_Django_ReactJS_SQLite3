@@ -30,3 +30,26 @@ test("a direct audio call alerts the other signed-in user", async ({ browser }) 
     await receiverContext.close();
   }
 });
+
+test("a direct video call alerts the other signed-in user", async ({ browser }) => {
+  const callerContext = await browser.newContext({ permissions: ["microphone", "camera"] });
+  const receiverContext = await browser.newContext({ permissions: ["microphone", "camera"] });
+  const caller = await callerContext.newPage();
+  const receiver = await receiverContext.newPage();
+
+  try {
+    await signIn(caller, demoUsers.you);
+    await signIn(receiver, demoUsers.ada);
+    await caller.goto("/chat/c_ada");
+    await receiver.goto("/chat/c_ada");
+    await receiver.getByRole("button", { name: "Start video call" }).waitFor();
+    await caller.getByRole("button", { name: "Start video call" }).click();
+    await expect(receiver.getByRole("dialog", { name: "Incoming call" })).toBeVisible({
+      timeout: 15_000,
+    });
+    await expect(receiver.getByText("Incoming video call")).toBeVisible();
+  } finally {
+    await callerContext.close();
+    await receiverContext.close();
+  }
+});

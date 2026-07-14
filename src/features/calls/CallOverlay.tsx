@@ -88,6 +88,10 @@ export function CallOverlay({
   useEffect(() => {
     if (remoteRef.current) remoteRef.current.srcObject = call.remoteStream;
     if (remoteAudioRef.current) remoteAudioRef.current.srcObject = call.remoteStream;
+    if (call.remoteStream) {
+      void remoteRef.current?.play().catch(() => undefined);
+      void remoteAudioRef.current?.play().catch(() => undefined);
+    }
   }, [call.remoteStream]);
 
   const incoming = call.direction === "incoming" && call.status === "ringing";

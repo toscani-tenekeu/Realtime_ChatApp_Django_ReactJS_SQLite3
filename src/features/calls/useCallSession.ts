@@ -132,7 +132,7 @@ export function useCallSession(userId: ID | undefined) {
         );
       };
       peer.onconnectionstatechange = () => {
-        if (["failed", "closed", "disconnected"].includes(peer.connectionState)) {
+        if (["failed", "closed"].includes(peer.connectionState)) {
           void finish(false, peer.connectionState === "failed" ? "failed" : "ended");
         }
       };
