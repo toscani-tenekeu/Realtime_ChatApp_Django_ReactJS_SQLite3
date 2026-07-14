@@ -89,7 +89,7 @@ From the repository root, run:
 python launch_host.py --seed
 ```
 
-The launcher applies migrations, optionally seeds demo data, starts the HTTPS Django/Uvicorn backend and HTTPS Vite frontend on `0.0.0.0`, detects your LAN IP, prints the URLs and PIDs, and writes service logs to `logs/host-*.log`. Stop only the services started by it with:
+The launcher applies migrations, optionally seeds demo data, starts the HTTPS Django/Uvicorn backend and HTTPS Vite frontend on `0.0.0.0`, detects your LAN IP, prints the URLs and PIDs, and writes service logs to `logs/host-*.log`. It automatically selects a Python installation that has Django/Uvicorn, even when Git Bash's `python` points to another version. Stop the recorded services or matching project processes on ports 8000/4173 with:
 
 ```powershell
 python launch_host.py --stop

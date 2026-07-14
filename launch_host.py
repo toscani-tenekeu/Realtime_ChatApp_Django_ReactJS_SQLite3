@@ -7,7 +7,7 @@ Run from the repository root:
 The script starts the Django ASGI backend and the Vite frontend with HTTPS,
 binds both services to 0.0.0.0, writes their logs to ``logs/``, and prints all
 URLs, process IDs, and demo credentials. Use ``python launch_host.py --stop``
-to stop the processes started by this script.
+to stop the recorded services or matching project processes on ports 8000/4173.
 """
 
 from __future__ import annotations
@@ -15,6 +15,7 @@ from __future__ import annotations
 import argparse
 import json
 import os
+import shutil
 import signal
 import socket
 import ssl
@@ -53,6 +54,64 @@ def port_open(port: int) -> bool:
         return sock.connect_ex(("127.0.0.1", port)) == 0
 
 
+def port_owners(port: int) -> list[int]:
+    """Return listening process IDs for a port on Windows or POSIX hosts."""
+    if os.name == "nt":
+        result = subprocess.run(
+            [
+                "powershell",
+                "-NoProfile",
+                "-Command",
+                f"(Get-NetTCPConnection -State Listen -LocalPort {port} -ErrorAction SilentlyContinue).OwningProcess",
+            ],
+            capture_output=True,
+            text=True,
+            check=False,
+        )
+        return sorted({int(line) for line in result.stdout.splitlines() if line.strip().isdigit()})
+    result = subprocess.run(["lsof", "-ti", f"TCP:{port}", "-sTCP:LISTEN"], capture_output=True, text=True, check=False)
+    return sorted({int(line) for line in result.stdout.splitlines() if line.strip().isdigit()})
+
+
+def process_command(pid: int) -> str:
+    if os.name == "nt":
+        result = subprocess.run(
+            [
+                "powershell",
+                "-NoProfile",
+                "-Command",
+                f"(Get-CimInstance Win32_Process -Filter 'ProcessId={pid}').CommandLine",
+            ],
+            capture_output=True,
+            text=True,
+            check=False,
+        )
+        return result.stdout.strip()
+    result = subprocess.run(["ps", "-p", str(pid), "-o", "args="], capture_output=True, text=True, check=False)
+    return result.stdout.strip()
+
+
+def stop_port_services() -> None:
+    """Stop only likely project processes occupying the app ports."""
+    patterns = ("uvicorn", "vite", "npm run dev", "npm.cmd run dev")
+    for port in (BACKEND_PORT, FRONTEND_PORT):
+        for pid in port_owners(port):
+            command = process_command(pid)
+            if not any(pattern.lower() in command.lower() for pattern in patterns):
+                print(f"Port {port} is owned by PID {pid}; skipped unrelated process.")
+                continue
+            if os.name == "nt":
+                subprocess.run(
+                    ["taskkill", "/PID", str(pid), "/T", "/F"],
+                    check=False,
+                    stdout=subprocess.DEVNULL,
+                    stderr=subprocess.DEVNULL,
+                )
+            else:
+                os.kill(pid, signal.SIGTERM)
+            print(f"Stopped existing project process PID {pid} on port {port}.")
+
+
 def ensure_certificates() -> tuple[Path, Path]:
     cert = CERT_DIR / "lan-cert.pem"
     key = CERT_DIR / "lan-key.pem"
@@ -68,6 +127,28 @@ def ensure_certificates() -> tuple[Path, Path]:
 
 def command_name() -> str:
     return "npm.cmd" if os.name == "nt" else "npm"
+
+
+def python_command() -> list[str]:
+    """Choose a Python executable that has Django and Uvicorn installed."""
+    candidates: list[list[str]] = [[sys.executable]]
+    launcher = shutil.which("py")
+    if launcher:
+        candidates.append([launcher, "-3.14"])
+    for candidate in candidates:
+        check = subprocess.run(
+            candidate + ["-c", "import django, uvicorn, sys; print(sys.executable)"],
+            capture_output=True,
+            text=True,
+            check=False,
+        )
+        if check.returncode == 0:
+            executable = check.stdout.strip().splitlines()[-1]
+            return [executable] if executable else candidate
+    raise SystemExit(
+        "No Python interpreter with Django and Uvicorn was found. "
+        "Install backend/requirements.txt, then run the script again."
+    )
 
 
 def base_environment(ip: str, cert: Path, key: Path) -> dict[str, str]:
@@ -98,8 +179,10 @@ def start_process(name: str, args: list[str], cwd: Path, env: dict[str, str]) ->
     kwargs: dict[str, object] = {
         "cwd": cwd,
         "env": env,
+        "stdin": subprocess.DEVNULL,
         "stdout": stdout,
         "stderr": stderr,
+        "close_fds": True,
     }
     if os.name == "nt":
         kwargs["creationflags"] = subprocess.CREATE_NEW_PROCESS_GROUP | subprocess.DETACHED_PROCESS
@@ -152,10 +235,10 @@ def stop_started() -> None:
     PID_FILE.unlink(missing_ok=True)
 
 
-def prepare_database(env: dict[str, str], *, seed: bool) -> None:
+def prepare_database(python: list[str], env: dict[str, str], *, seed: bool) -> None:
     print("Applying Django migrations...")
     result = subprocess.run(
-        [sys.executable, "manage.py", "migrate", "--noinput"],
+        python + ["manage.py", "migrate", "--noinput"],
         cwd=BACKEND,
         env=env,
         check=False,
@@ -165,7 +248,7 @@ def prepare_database(env: dict[str, str], *, seed: bool) -> None:
     if seed:
         print("Seeding demo users and conversations...")
         result = subprocess.run(
-            [sys.executable, "manage.py", "seed_demo"],
+            python + ["manage.py", "seed_demo"],
             cwd=BACKEND,
             env=env,
             check=False,
@@ -185,13 +268,13 @@ def launch(*, seed: bool) -> None:
             )
 
     env = base_environment(ip, cert, key)
-    prepare_database(env, seed=seed)
-    python = sys.executable
+    python = python_command()
+    prepare_database(python, env, seed=seed)
     npm = command_name()
     backend = start_process(
         "backend",
         [
-            python,
+            *python,
             "-m",
             "uvicorn",
             "realtime_chatapp.asgi:application",
@@ -241,11 +324,12 @@ def launch(*, seed: bool) -> None:
 
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--stop", action="store_true", help="stop the services started by this script")
+    parser.add_argument("--stop", action="store_true", help="stop recorded or matching project services")
     parser.add_argument("--seed", action="store_true", help="create or refresh the demo users and conversations")
     args = parser.parse_args()
     if args.stop:
         stop_started()
+        stop_port_services()
     else:
         launch(seed=args.seed)
 
